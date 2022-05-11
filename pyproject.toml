@@ -1,0 +1,99 @@
+[project]
+name = "txt-utils"
+version = "0.0.1"
+description = "CLI."
+readme = "README.md"
+requires-python = ">=3.6"
+license = {text = "MIT"}
+authors = [
+  {name = "Stefan Taubert", email = "stefan.taubert@posteo.me"}
+]
+maintainers = [
+  {name = "Stefan Taubert", email = "stefan.taubert@posteo.me"},
+]
+keywords = [
+  "Text-to-speech",
+  "Speech synthesis",
+  "praat",
+  "TextGrid",
+  "Utils",
+  "Language",
+  "Linguistics"
+]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Operating System :: OS Independent",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX",
+  "Operating System :: POSIX :: BSD",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: Unix",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.6",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+  "tqdm",
+  "ordered_set>=4.1.0",
+  "pronunciation_dictionary>=0.0.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/stefantaubert/txt-utils"
+Issues = "https://github.com/stefantaubert/txt-utils/issues"
+
+[project.scripts]
+txt-utils-cli = "txt_utils_cli.cli:run_prod"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = [
+  "txt_utils",
+  "txt_utils_cli"
+]
+exclude = [
+  "txt_utils_tests",
+  "txt_utils_debug",
+  "txt_utils_cli_debug",
+  "txt_utils_cli_tests",
+]
+namespaces = true
+
+[tool.pytest.ini_options]
+log_cli = true
+log_level = "DEBUG"
+testpaths = [
+  "src/txt_utils_tests",
+  "src/txt_utils_cli_tests"
+]
+
+[tool.autopep8]
+indent-size = 2
+ignore = ["E121"]
+max_line_length = 100
+
+[tool.isort]
+line_length = 100
+indent = 2
+known_first_party = [
+  "txt_utils",
+  "txt_utils_cli"
+]
+known_third_party = [
+  "tqdm",
+  "ordered_set",
+  "pronunciation_dictionary"
+]
+
+[build-system]
+requires = [
+  "setuptools >= 40.9.0",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"
