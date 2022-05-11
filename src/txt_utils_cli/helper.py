@@ -1,7 +1,7 @@
 import argparse
 import codecs
 import os
-from argparse import _ArgumentGroup, ArgumentParser, ArgumentTypeError
+from argparse import ArgumentParser, ArgumentTypeError, _ArgumentGroup
 from collections import OrderedDict
 from functools import partial
 from os import cpu_count
@@ -16,7 +16,7 @@ from ordered_set import OrderedSet
 from txt_utils_cli.globals import (DEFAULT_CHUNKSIZE, DEFAULT_ENCODING, DEFAULT_MAXTASKSPERCHILD,
                                    DEFAULT_N_JOBS)
 
-TXT_FILE_TYPE = ".txt"
+T = TypeVar("T")
 
 
 def get_chunks(keys: OrderedSet[str], chunk_size: Optional[int]) -> List[OrderedSet[str]]:
@@ -26,26 +26,12 @@ def get_chunks(keys: OrderedSet[str], chunk_size: Optional[int]) -> List[Ordered
   return chunked_list
 
 
-
 class ConvertToOrderedSetAction(argparse._StoreAction):
   def __call__(self, parser: argparse.ArgumentParser, namespace: argparse.Namespace, values: Optional[List], option_string: Optional[str] = None):
     val = None
     if values is not None:
       val = OrderedSet(values)
     super().__call__(parser, namespace, val, option_string)
-
-
-def add_n_digits_argument(parser: ArgumentParser) -> None:
-  parser.add_argument("--n-digits", type=int, default=16, metavar='COUNT',
-                      choices=range(17), help="precision of the grids (max count of digits after the comma)")
-
-
-# class CheckFileAlreadyExistNoOverride(argparse._StoreAction):
-#   def __call__(self, parser: argparse.ArgumentParser, namespace: argparse.Namespace, values: Optional[Path], option_string: Optional[str] = None):
-#     if values is not None:
-#       if not namespace.overwrite and values.is_file():
-#         raise ArgumentTypeError("File already exists!")
-#     super().__call__(parser, namespace, values, option_string)
 
 
 def add_encoding_argument(parser: ArgumentParser, help_str: str = "encoding of the grid files") -> None:
@@ -68,18 +54,6 @@ def add_directory_argument(parser: ArgumentParser, help_str: str = "directory co
                       help=help_str)
 
 
-def add_tiers_argument(parser: ArgumentParser, help_str: str) -> None:
-  parser.add_argument("tiers", metavar="tiers", type=parse_non_empty_or_whitespace,
-                      nargs="+", help=help_str, action=ConvertToOrderedSetAction)
-
-
-def add_tier_argument(parser: ArgumentParser, help_str: str) -> None:
-  parser.add_argument("tier", metavar="tier", type=parse_non_empty_or_whitespace, help=help_str)
-
-# def add_overwrite_tier_argument(parser: ArgumentParser) -> None:
-#   parser.add_argument("-ot", "--overwrite-tier", action="store_true",
-#                       help="overwrite existing tiers")
-
 def add_mp_group(parser: ArgumentParser) -> _ArgumentGroup:
   group = parser.add_argument_group("multiprocessing arguments")
   add_n_jobs_argument(group)
@@ -87,12 +61,10 @@ def add_mp_group(parser: ArgumentParser) -> _ArgumentGroup:
   add_maxtaskperchild_argument(group)
   return group
 
+
 def add_n_jobs_argument(parser: ArgumentParser) -> None:
   parser.add_argument("-j", "--n-jobs", metavar='N', type=int,
                       choices=range(1, cpu_count() + 1), default=DEFAULT_N_JOBS, help="amount of parallel cpu jobs")
-
-
-T = TypeVar("T")
 
 
 def parse_codec(value: str) -> str:
@@ -214,7 +186,6 @@ def add_chunksize_argument(parser: ArgumentParser, target: str = "lines", defaul
 def add_maxtaskperchild_argument(parser: ArgumentParser) -> None:
   parser.add_argument("-m", "--maxtasksperchild", type=get_optional(parse_positive_integer), metavar="NUMBER",
                       help="amount of tasks per child", default=DEFAULT_MAXTASKSPERCHILD)
-
 
 
 def copy_file(file_in: Path, file_out: Path) -> None:
