@@ -15,7 +15,7 @@ from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_co
 
 def get_sorting_parser(parser: ArgumentParser):
   parser.add_argument("file", type=parse_existing_file, help="text file")
-  parser.add_argument("--sep", type=parse_non_empty, default="\n",
+  parser.add_argument("--lsep", type=parse_non_empty, default="\n",
                       help="line separator")
   parser.add_argument("--desc", action="store_true", help="sort descending; default is ascending")
   add_encoding_argument(parser, "encoding of the file")
@@ -35,7 +35,7 @@ def sort_ns(ns: Namespace) -> ExecutionResult:
     return False, False
 
   logger.info("Splitting lines...")
-  lines = content.split(ns.sep)
+  lines = content.split(ns.lsep)
   del content
 
   logger.info("Sorting lines...")
@@ -47,7 +47,7 @@ def sort_ns(ns: Namespace) -> ExecutionResult:
   del lines
 
   logger.info("Rejoining lines...")
-  content = ns.sep.join(lines_new)
+  content = ns.lsep.join(lines_new)
   del lines_new
 
   logger.info("Saving...")

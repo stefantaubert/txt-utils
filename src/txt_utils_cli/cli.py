@@ -17,6 +17,7 @@ from txt_utils_cli.logging_configuration import (configure_root_logger, get_file
                                                  try_init_file_logger)
 from txt_utils_cli.merging import get_merging_parser
 from txt_utils_cli.sorting import get_sorting_parser
+from txt_utils_cli.vocabulary_exporting import get_vocabulary_exporting_parser
 
 __version__ = version("txt-utils")
 
@@ -39,6 +40,7 @@ def get_parsers() -> Parsers:
   yield "merge", "merge multiple text files into one", get_merging_parser
   yield "remove-duplicates", "remove duplicate lines", get_duplicates_removal_parser
   yield "sort", "sort lines", get_sorting_parser
+  yield "extract-vocabulary", "extract vocabulary", get_vocabulary_exporting_parser
 
 
 def print_features():

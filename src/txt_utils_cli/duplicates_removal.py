@@ -15,7 +15,7 @@ from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_co
 
 def get_duplicates_removal_parser(parser: ArgumentParser):
   parser.add_argument("file", type=parse_existing_file, help="text file")
-  parser.add_argument("--sep", type=parse_non_empty, default="\n",
+  parser.add_argument("--lsep", type=parse_non_empty, default="\n",
                       help="line separator")
   add_encoding_argument(parser, "encoding of the file")
   return remove_duplicates_ns
@@ -34,7 +34,7 @@ def remove_duplicates_ns(ns: Namespace) -> ExecutionResult:
     return False, False
 
   logger.info("Splitting lines...")
-  lines = content.split(ns.sep)
+  lines = content.split(ns.lsep)
   del content
   logger.info("Removing duplicate lines...")
   lines_new = OrderedSet(lines)
@@ -42,10 +42,12 @@ def remove_duplicates_ns(ns: Namespace) -> ExecutionResult:
   if len(lines_new) == len(lines):
     logger.info("File contained no duplicate lines.")
     return True, False
+
+  logger.info(f"{len(lines) - len(lines_new)} of {len(lines)} lines were duplicates.")
   del lines
 
   logger.info("Rejoining lines...")
-  content = ns.sep.join(lines_new)
+  content = ns.lsep.join(lines_new)
   del lines_new
 
   logger.info("Saving...")

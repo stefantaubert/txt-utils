@@ -20,7 +20,7 @@ def get_merging_parser(parser: ArgumentParser):
   parser.add_argument("output", type=parse_path, help="output text file")
   parser.add_argument("--include", type=parse_non_empty_or_whitespace, nargs="+",
                       action=ConvertToOrderedSetAction, default=OrderedSet((".txt",)), help="include these file types")
-  parser.add_argument("--sep", type=str, default="\n",
+  parser.add_argument("--lsep", type=str, default="\n",
                       help="separate file contents with this text while merging")
   add_encoding_argument(parser, "encoding of the text files and the output file")
   return merge_ns
@@ -52,7 +52,7 @@ def merge_ns(ns: Namespace) -> ExecutionResult:
     texts.append(text)
 
   logger.info("Merging files...")
-  text = ns.sep.join(texts)
+  text = ns.lsep.join(texts)
 
   logger.info("Saving merged output...")
   output = cast(Path, ns.output)
