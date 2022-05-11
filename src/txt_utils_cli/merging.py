@@ -1,7 +1,7 @@
 import os
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Generator, List
+from typing import Generator, List, cast
 
 from ordered_set import OrderedSet
 from tqdm import tqdm
@@ -14,6 +14,7 @@ from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_co
 
 
 def get_merging_parser(parser: ArgumentParser):
+  parser.description = "This command merges multiple files into one."
   parser.add_argument("directories", type=parse_existing_directory,
                       metavar="directory", nargs="+", help="directories containing text files", action=ConvertToOrderedSetAction)
   parser.add_argument("output", type=parse_path, help="output text file")
@@ -39,22 +40,33 @@ def merge_ns(ns: Namespace) -> ExecutionResult:
   )
 
   texts = []
-
+  all_successfull = True
   for path in tqdm(text_files, desc="Reading text files", unit=" file(s)"):
-    text = path.read_text(ns.encoding)
+    try:
+      text = path.read_text(ns.encoding)
+    except Exception as ex:
+      flogger(f"File: {cast(Path, path).absolute()}")
+      flogger.error("File couldn't be loaded!")
+      flogger.exception(ex)
+      all_successfull = False
     texts.append(text)
 
   logger.info("Merging files...")
   text = ns.sep.join(texts)
+
   logger.info("Saving merged output...")
+  output = cast(Path, ns.output)
+
   try:
-    ns.output.write_text(text, "UTF-8")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(text, "UTF-8")
   except Exception as ex:
     logger.error("Output couldn't be saved!")
     flogger.exception(ex)
     return False, None
-  logger.info(f"Written output to: {ns.output.absolute()}")
-  return True, None
+
+  logger.info(f"Written output to: {output.absolute()}")
+  return all_successfull, None
 
 
 def get_all_files_in_all_subfolders(directory: Path) -> Generator[Path, None, None]:

@@ -10,11 +10,13 @@ from tempfile import gettempdir
 from time import perf_counter
 from typing import Callable, Dict, Generator, List, Tuple
 
+from txt_utils_cli.duplicates_removal import get_duplicates_removal_parser
 from txt_utils_cli.globals import ExecutionResult
 from txt_utils_cli.helper import get_optional, parse_path
 from txt_utils_cli.logging_configuration import (configure_root_logger, get_file_logger,
                                                  try_init_file_logger)
 from txt_utils_cli.merging import get_merging_parser
+from txt_utils_cli.sorting import get_sorting_parser
 
 __version__ = version("txt-utils")
 
@@ -35,6 +37,8 @@ def formatter(prog):
 
 def get_parsers() -> Parsers:
   yield "merge", "merge multiple text files into one", get_merging_parser
+  yield "remove-duplicates", "remove duplicate lines", get_duplicates_removal_parser
+  yield "sort", "sort lines", get_sorting_parser
 
 
 def print_features():
