@@ -16,6 +16,7 @@ from txt_utils_cli.helper import get_optional, parse_path
 from txt_utils_cli.logging_configuration import (configure_root_logger, get_file_logger,
                                                  try_init_file_logger)
 from txt_utils_cli.merging import get_merging_parser
+from txt_utils_cli.replacement import get_replacement_parser
 from txt_utils_cli.sorting import get_sorting_parser
 from txt_utils_cli.transcription import get_transcription_parser
 from txt_utils_cli.vocabulary_exporting import get_vocabulary_exporting_parser
@@ -43,6 +44,7 @@ def get_parsers() -> Parsers:
   yield "sort", "sort lines", get_sorting_parser
   yield "extract-vocabulary", "extract vocabulary", get_vocabulary_exporting_parser
   yield "transcribe", "transcribe words", get_transcription_parser
+  yield "replace", "replace text", get_replacement_parser
 
 
 def print_features():
