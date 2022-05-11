@@ -91,6 +91,24 @@ known_third_party = [
   "pronunciation_dictionary"
 ]
 
+[tool.pyright]
+root = ["src"]
+include = ["src"]
+pythonVersion = "3.9"
+pythonPlatform = "All"
+typeCheckingMode = "off"
+stubPath = ""
+exclude = [
+  "**/node_modules",
+  "**/__pycache__",
+  ".git",
+  "**/*.egg-info",
+  "**/*_debug"
+]
+venvPath = "/home/mi/.local/share/virtualenvs"
+venv = "txt-utils-YGZOO0US"
+useLibraryCodeForTypes = true
+
 [build-system]
 requires = [
   "setuptools >= 40.9.0",
