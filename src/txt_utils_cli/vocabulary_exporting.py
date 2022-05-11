@@ -25,8 +25,8 @@ def get_vocabulary_exporting_parser(parser: ArgumentParser):
                       help="output file to write the vocabulary")
   parser.add_argument("--lsep", type=parse_non_empty, default="\n",
                       help="line separator")
-  parser.add_argument("--wsep", type=parse_non_empty, default=" ",
-                      help="word separator")
+  parser.add_argument("--wsep", type=str, default=" ",
+                      help="vocabulary separator")
   parser.add_argument("--include-empty", action="store_true",
                       help="include empty text in vocabulary if it occurs")
   add_encoding_argument(parser, "encoding of the file and output")
@@ -85,6 +85,9 @@ def extract_vocabulary_ns(ns: Namespace) -> ExecutionResult:
     voc.update(*iterator)
   del chunks
 
+  if not ns.include_empty and "" in voc:
+    voc.remove("")
+
   logger.info(f"Extracted vocabulary size: {len(voc)}")
 
   logger.info("Saving...")
@@ -103,6 +106,13 @@ def extract_vocabulary_ns(ns: Namespace) -> ExecutionResult:
   return True, True
 
 
+def get_chunks(keys: List[str], chunk_size: Optional[int]) -> List[List[str]]:
+  if chunk_size is None:
+    chunk_size = len(keys)
+  chunked_list = list(keys[i: i + chunk_size] for i in range(0, len(keys), chunk_size))
+  return chunked_list
+
+
 process_chunks: List[str] = None
 
 
@@ -112,17 +122,14 @@ def get_vocab_process(chunk_nr: int, wsep: str) -> Set[str]:
   return get_vocab(chunk, wsep)
 
 
-def get_chunks(keys: List[str], chunk_size: Optional[int]) -> List[List[str]]:
-  if chunk_size is None:
-    chunk_size = len(keys)
-  chunked_list = list(keys[i: i + chunk_size] for i in range(0, len(keys), chunk_size))
-  return chunked_list
-
-
 def get_vocab(lines: List[str], wsep: str) -> Set[str]:
   voc = set()
   for line in lines:
-    voc.update(line.split(wsep))
+    if wsep == "":
+      tokens = line
+    else:
+      tokens = line.split(wsep)
+    voc.update(tokens)
   return voc
 
 

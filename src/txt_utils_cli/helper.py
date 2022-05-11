@@ -1,7 +1,7 @@
 import argparse
 import codecs
 import os
-from argparse import ArgumentParser, ArgumentTypeError
+from argparse import _ArgumentGroup, ArgumentParser, ArgumentTypeError
 from collections import OrderedDict
 from functools import partial
 from os import cpu_count
@@ -80,11 +80,12 @@ def add_tier_argument(parser: ArgumentParser, help_str: str) -> None:
 #   parser.add_argument("-ot", "--overwrite-tier", action="store_true",
 #                       help="overwrite existing tiers")
 
-def add_mp_group(parser: ArgumentParser) -> None:
+def add_mp_group(parser: ArgumentParser) -> _ArgumentGroup:
   group = parser.add_argument_group("multiprocessing arguments")
   add_n_jobs_argument(group)
   add_chunksize_argument(group)
   add_maxtaskperchild_argument(group)
+  return group
 
 def add_n_jobs_argument(parser: ArgumentParser) -> None:
   parser.add_argument("-j", "--n-jobs", metavar='N', type=int,
