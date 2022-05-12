@@ -49,6 +49,7 @@ def merge_ns(ns: Namespace) -> ExecutionResult:
       flogger.error("File couldn't be loaded!")
       flogger.exception(ex)
       all_successfull = False
+      continue
     texts.append(text)
 
   logger.info("Merging files...")
