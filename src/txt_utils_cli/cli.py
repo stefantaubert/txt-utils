@@ -19,6 +19,8 @@ from txt_utils_cli.merging import get_merging_parser
 from txt_utils_cli.replacement import get_replacement_parser
 from txt_utils_cli.sorting import get_sorting_parser
 from txt_utils_cli.transcription import get_transcription_parser
+from txt_utils_cli.trimming import get_trimming_parser
+from txt_utils_cli.unit_removal import get_unit_removal_parser
 from txt_utils_cli.vocabulary_exporting import get_vocabulary_exporting_parser
 
 __version__ = version("txt-utils")
@@ -45,6 +47,8 @@ def get_parsers() -> Parsers:
   yield "extract-vocabulary", "extract vocabulary", get_vocabulary_exporting_parser
   yield "transcribe", "transcribe words", get_transcription_parser
   yield "replace", "replace text", get_replacement_parser
+  yield "trim-units", "trim units of each line", get_trimming_parser
+  yield "remove-units", "remove units of each line", get_unit_removal_parser
 
 
 def print_features():

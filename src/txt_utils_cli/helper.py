@@ -34,7 +34,15 @@ class ConvertToOrderedSetAction(argparse._StoreAction):
     super().__call__(parser, namespace, val, option_string)
 
 
-def add_encoding_argument(parser: ArgumentParser, help_str: str = "encoding of the grid files") -> None:
+class ConvertToSetAction(argparse._StoreAction):
+  def __call__(self, parser: argparse.ArgumentParser, namespace: argparse.Namespace, values: Optional[List], option_string: Optional[str] = None):
+    val = None
+    if values is not None:
+      val = set(values)
+    super().__call__(parser, namespace, val, option_string)
+
+
+def add_encoding_argument(parser: ArgumentParser, help_str: str = "encoding of the file") -> None:
   parser.add_argument("--encoding", type=parse_codec, metavar='CODEC',
                       help=help_str + "; see all available codecs at https://docs.python.org/3.8/library/codecs.html#standard-encodings", default=DEFAULT_ENCODING)
 

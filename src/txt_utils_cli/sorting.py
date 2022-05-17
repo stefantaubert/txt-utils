@@ -18,7 +18,7 @@ def get_sorting_parser(parser: ArgumentParser):
   parser.add_argument("--lsep", type=parse_non_empty, default="\n",
                       help="line separator")
   parser.add_argument("--desc", action="store_true", help="sort descending; default is ascending")
-  add_encoding_argument(parser, "encoding of the file")
+  add_encoding_argument(parser)
   return sort_ns
 
 
