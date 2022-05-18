@@ -19,6 +19,12 @@ from txt_utils_cli.globals import (DEFAULT_CHUNKSIZE, DEFAULT_ENCODING, DEFAULT_
 T = TypeVar("T")
 
 
+def split_adv(s: str, sep: str) -> List[str]:
+  if sep == "":
+    return list(s)
+  return s.split(sep)
+
+
 def get_chunks(keys: OrderedSet[str], chunk_size: Optional[int]) -> List[OrderedSet[str]]:
   if chunk_size is None:
     chunk_size = len(keys)

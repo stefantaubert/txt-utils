@@ -8,6 +8,15 @@ CLI to batch process lines of a single text file.
 
 ## Features
 
+- merge multiple text files into one
+- remove duplicate lines
+- sort lines
+- extract vocabulary
+- transcribe words
+- replace text
+- trim units
+- remove units
+
 ## Roadmap
 
 ## Installation

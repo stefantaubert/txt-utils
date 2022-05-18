@@ -52,7 +52,7 @@ def replace_ns(ns: Namespace) -> ExecutionResult:
     return True, False
 
   logger.info("Replacing...")
-  content.replace(ns.text, ns.replace_with)
+  content = content.replace(ns.text, ns.replace_with)
 
   logger.info("Saving...")
   try:

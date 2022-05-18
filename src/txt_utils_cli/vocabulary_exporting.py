@@ -26,7 +26,7 @@ def get_vocabulary_exporting_parser(parser: ArgumentParser):
   parser.add_argument("--lsep", type=parse_non_empty, default="\n",
                       help="line separator")
   parser.add_argument("--wsep", type=str, default=" ",
-                      help="vocabulary separator")
+                      help="unit separator")
   parser.add_argument("--include-empty", action="store_true",
                       help="include empty text in vocabulary if it occurs")
   add_encoding_argument(parser, "encoding of the file and output")

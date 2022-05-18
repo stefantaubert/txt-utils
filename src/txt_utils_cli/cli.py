@@ -44,11 +44,11 @@ def get_parsers() -> Parsers:
   yield "merge", "merge multiple text files into one", get_merging_parser
   yield "remove-duplicates", "remove duplicate lines", get_duplicates_removal_parser
   yield "sort", "sort lines", get_sorting_parser
-  yield "extract-vocabulary", "extract vocabulary", get_vocabulary_exporting_parser
-  yield "transcribe", "transcribe words", get_transcription_parser
+  yield "extract-vocabulary", "extract unit vocabulary", get_vocabulary_exporting_parser
+  yield "transcribe", "transcribe units", get_transcription_parser
   yield "replace", "replace text", get_replacement_parser
-  yield "trim-units", "trim units of each line", get_trimming_parser
-  yield "remove-units", "remove units of each line", get_unit_removal_parser
+  yield "trim-units", "trim units", get_trimming_parser
+  yield "remove-units", "remove units", get_unit_removal_parser
 
 
 def print_features():
@@ -172,6 +172,6 @@ def create_debug_file():
 
 
 if __name__ == "__main__":
-  # print_features()
+  print_features()
   create_debug_file()
   run()
