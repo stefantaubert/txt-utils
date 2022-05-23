@@ -97,7 +97,7 @@ def transcribe_ns(ns: Namespace) -> ExecutionResult:
   flogger.debug(f"Jobs: {n_jobs}")
 
   chunks = get_chunks(lines, chunksize)
-  chunks = chunks[:1]
+  # chunks = chunks[:1]
   del lines
 
   flogger.debug(f"Chunks: {len(chunks)}")
@@ -130,7 +130,7 @@ def transcribe_ns(ns: Namespace) -> ExecutionResult:
     for chunk_nr in range(len(chunks))
     for line_i, line in enumerate(result[chunk_nr])
   )
-  new_content = "\n".join(new_lines)
+  new_content = ns.lsep.join(new_lines)
   del chunks
   del result
   logger.info("Saving...")

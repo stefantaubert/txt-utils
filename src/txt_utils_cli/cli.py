@@ -13,6 +13,7 @@ from typing import Callable, Dict, Generator, List, Tuple
 from txt_utils_cli.duplicates_removal import get_duplicates_removal_parser
 from txt_utils_cli.globals import ExecutionResult
 from txt_utils_cli.helper import get_optional, parse_path
+from txt_utils_cli.line_replacement import get_line_replacement_parser
 from txt_utils_cli.logging_configuration import (configure_root_logger, get_file_logger,
                                                  try_init_file_logger)
 from txt_utils_cli.merging import get_merging_parser
@@ -47,6 +48,7 @@ def get_parsers() -> Parsers:
   yield "extract-vocabulary", "extract unit vocabulary", get_vocabulary_exporting_parser
   yield "transcribe", "transcribe units", get_transcription_parser
   yield "replace", "replace text", get_replacement_parser
+  yield "replace-line", "replace text in a line", get_line_replacement_parser
   yield "trim-units", "trim units", get_trimming_parser
   yield "remove-units", "remove units", get_unit_removal_parser
 

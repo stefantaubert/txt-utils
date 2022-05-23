@@ -20,24 +20,21 @@ from txt_utils_cli.helper import add_encoding_argument, parse_existing_file, par
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
-def get_replacement_parser(parser: ArgumentParser):
+def get_line_replacement_parser(parser: ArgumentParser):
   parser.add_argument("file", type=parse_existing_file, help="text file")
-  parser.add_argument("text", type=parse_non_empty,
-                      help="replace text")
+  parser.add_argument("pattern", type=parse_non_empty,
+                      help="replace pattern")
   parser.add_argument("replace_with", type=str, metavar="replace-with",
-                      help="replace text with this text")
+                      help="replace pattern with this text")
+  parser.add_argument("--lsep", type=parse_non_empty, default="\n",
+                      help="line separator")
   add_encoding_argument(parser)
-  parser.add_argument("-d", "--disable-regex", help="disable regex parsing")
-  return replace_ns
+  return line_replace_ns
 
 
-def replace_ns(ns: Namespace) -> ExecutionResult:
+def line_replace_ns(ns: Namespace) -> ExecutionResult:
   logger = init_and_get_console_logger(__name__)
   flogger = get_file_logger()
-
-  if ns.text == ns.replace_with:
-    logger.error("Parameter 'text' and 'replace_with' need to be different!")
-    return False, False
 
   path = cast(Path, ns.file)
 
@@ -49,15 +46,26 @@ def replace_ns(ns: Namespace) -> ExecutionResult:
     flogger.exception(ex)
     return False, False
 
-  logger.info("Replacing...")
-  if ns.disable_regex:
-    if ns.text not in content:
-      logger.info("File did not contained text. Nothing to replace.")
-      return True, False
-    content = content.replace(ns.text, ns.replace_with)
-  else:
-    pattern = re.compile(ns.text)
-    content = re.sub(pattern, ns.replace_with, content)
+  logger.info("Splitting lines...")
+  lines = content.split(ns.lsep)
+  del content
+
+  pattern = re.compile(ns.pattern)
+  changed_counter = 0
+  for line_nr, line in enumerate(tqdm(lines, desc="Replacing", unit=" line(s)")):
+    line_new = pattern.sub(ns.replace_with, line)
+    if line_new != line:
+      lines[line_nr] = line_new
+      changed_counter += 1
+
+  if changed_counter == 0:
+    logger.info("Didn't changed anything.")
+    return True, False
+
+  logger.info(f"Changed {changed_counter} line(s).")
+
+  logger.info("Rejoining lines...")
+  content = ns.lsep.join(lines)
 
   logger.info("Saving...")
   try:
