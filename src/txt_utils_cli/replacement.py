@@ -27,7 +27,7 @@ def get_replacement_parser(parser: ArgumentParser):
   parser.add_argument("replace_with", type=str, metavar="replace-with",
                       help="replace text with this text")
   add_encoding_argument(parser)
-  parser.add_argument("-d", "--disable-regex", help="disable regex parsing")
+  parser.add_argument("-d", "--disable-regex", action="store_true", help="disable regex parsing")
   return replace_ns
 
 
