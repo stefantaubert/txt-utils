@@ -33,6 +33,7 @@ txt-utils-cli
 
 ## Dependencies
 
+- pandas
 - tqdm
 - ordered-set >=4.1.0
 - pronunciation-dictionary >=0.0.4

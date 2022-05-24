@@ -19,6 +19,7 @@ from txt_utils_cli.logging_configuration import (configure_root_logger, get_file
 from txt_utils_cli.merging import get_merging_parser
 from txt_utils_cli.replacement import get_replacement_parser
 from txt_utils_cli.sorting import get_sorting_parser
+from txt_utils_cli.statistics_word_counts import get_word_count_export_parser
 from txt_utils_cli.transcription import get_transcription_parser
 from txt_utils_cli.trimming import get_trimming_parser
 from txt_utils_cli.unit_removal import get_unit_removal_parser
@@ -51,6 +52,7 @@ def get_parsers() -> Parsers:
   yield "replace-line", "replace text in a line", get_line_replacement_parser
   yield "trim-units", "trim units", get_trimming_parser
   yield "remove-units", "remove units", get_unit_removal_parser
+  yield "create-unit-occurrence-stats", "create unit occurrence statistics", get_word_count_export_parser
 
 
 def print_features():

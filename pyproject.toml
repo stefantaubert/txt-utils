@@ -39,6 +39,7 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
+  "pandas",
   "tqdm",
   "ordered_set>=4.1.0",
   "pronunciation_dictionary>=0.0.4",
@@ -86,6 +87,7 @@ known_first_party = [
   "txt_utils_cli"
 ]
 known_third_party = [
+  "pandas",
   "tqdm",
   "ordered_set",
   "pronunciation_dictionary"
