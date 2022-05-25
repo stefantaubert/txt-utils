@@ -30,7 +30,7 @@ def get_word_count_export_parser(parser: ArgumentParser):
   parser.add_argument("file", type=parse_existing_file, help="text file")
   parser.add_argument("--lsep", type=parse_non_empty, default="\n",
                       help="line separator")
-  parser.add_argument("--sep", type=parse_non_empty, default=" ",
+  parser.add_argument("--sep", type=str, default=" ",
                       help="unit separator")
   add_encoding_argument(parser, "encoding of the text files and the output file")
   parser.add_argument("output", type=parse_path, help="output .csv")
@@ -75,8 +75,8 @@ def get_df(content: str, lsep: str, sep: str, logger: Logger) -> DataFrame:
     total_counter.update(split_adv(line, sep))
 
   logger.debug("Creating csv...")
-  columns = ["Unit", "# Occurrences"]
-  df = DataFrame(total_counter.items(), columns=columns)
+  columns = ["# Occurrences", "Unit"]
+  df = DataFrame([(v, k) for k, v in total_counter.items()], columns=columns)
 
   logger.debug("Sorting csv...")
   df.sort_values(["# Occurrences", "Unit"], ascending=[0, 1], inplace=True, ignore_index=True)

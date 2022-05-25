@@ -11,10 +11,10 @@ def test_component():
   result = get_df(content, "\n", " ", getLogger())
 
   assert_res = DataFrame([
-    ("c", 3),
-    ("a", 2),
-    ("b", 2),
-    ("d", 2),
-  ], columns=["Unit", "# Occurrences"], index=[0, 1, 2, 3])
+    (3, "c"),
+    (2, "a"),
+    (2, "b"),
+    (2, "d"),
+  ], columns=["# Occurrences", "Unit"], index=[0, 1, 2, 3])
 
   pandas.testing.assert_frame_equal(result, assert_res)

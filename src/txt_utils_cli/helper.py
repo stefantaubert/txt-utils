@@ -19,6 +19,30 @@ from txt_utils_cli.globals import (DEFAULT_CHUNKSIZE, DEFAULT_ENCODING, DEFAULT_
 T = TypeVar("T")
 
 
+# def get_split_method(sep: str) -> Callable[[str, str], List[str]]:
+#   if sep == "":
+#     return split_chars
+#   return str.split
+
+
+# def get_split_method_gen(sep: str) -> Callable[[str, str], Generator[str, None, None]]:
+#   if sep == "":
+#     return split_chars_gen
+#   return split_gen
+
+
+# def split_chars(s: str, _: str) -> List[str]:
+#   return list(s)
+
+
+# def split_gen(s: str, sep: str) -> Generator[str, None, None]:
+#   yield from s.split(sep)
+
+
+# def split_chars_gen(s: str, _: str) -> Generator[str, None, None]:
+#   yield from s
+
+
 def split_adv(s: str, sep: str) -> List[str]:
   if sep == "":
     return list(s)
