@@ -2,6 +2,7 @@ import os
 from argparse import ArgumentParser, Namespace
 from collections import Counter
 from functools import partial
+from logging import Logger
 from math import ceil
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
@@ -48,20 +49,7 @@ def get_word_count_ns(ns: Namespace) -> ExecutionResult:
     flogger.exception(ex)
     return False, False
 
-  logger.info("Splitting lines...")
-  lines = content.split(ns.lsep)
-  del content
-
-  total_counter = Counter()
-  lines = tqdm(lines, desc="Calculating counts", unit=" line(s)")
-  for line in lines:
-    total_counter.update(split_adv(line, ns.sep))
-
-  columns = ["Unit", "# Occurrences"]
-  data = total_counter.most_common()
-
-  logger.debug("Creating csv...")
-  df = DataFrame(data, columns=columns)
+  df = get_df(content, ns.lsep, ns.sep, logger)
 
   logger.info("Saving...")
 
@@ -74,3 +62,22 @@ def get_word_count_ns(ns: Namespace) -> ExecutionResult:
     return False, False
   logger.info(f"Saved output to: \"{ns.output.absolute()}\".")
   return True, True
+
+
+def get_df(content: str, lsep: str, sep: str, logger: Logger) -> DataFrame:
+  logger.info("Splitting lines...")
+  lines = content.split(lsep)
+  del content
+
+  total_counter = Counter()
+  lines = tqdm(lines, desc="Calculating counts", unit=" line(s)")
+  for line in lines:
+    total_counter.update(split_adv(line, sep))
+
+  logger.debug("Creating csv...")
+  columns = ["Unit", "# Occurrences"]
+  df = DataFrame(total_counter.items(), columns=columns)
+
+  logger.debug("Sorting csv...")
+  df.sort_values(["# Occurrences", "Unit"], ascending=[0, 1], inplace=True, ignore_index=True)
+  return df
