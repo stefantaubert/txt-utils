@@ -11,7 +11,8 @@ from tqdm import tqdm
 from txt_utils_cli.default_args import add_file_arguments
 from txt_utils_cli.globals import ExecutionResult
 from txt_utils_cli.helper import (add_encoding_argument, add_mp_group, get_optional,
-                                  parse_existing_file, parse_non_negative_integer, parse_positive_integer)
+                                  parse_existing_file, parse_non_negative_integer,
+                                  parse_positive_integer)
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 

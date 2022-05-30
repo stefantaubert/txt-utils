@@ -5,8 +5,7 @@ from functools import partial
 from os import cpu_count
 from pathlib import Path
 from shutil import copy
-from typing import Callable, List, Optional
-from typing import TypeVar
+from typing import Callable, List, Optional, TypeVar
 
 from ordered_set import OrderedSet
 

@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import cast
 
 from tqdm import tqdm
-from txt_utils_cli.default_args import add_file_arguments
 
+from txt_utils_cli.default_args import add_file_arguments
 from txt_utils_cli.globals import ExecutionResult
 from txt_utils_cli.helper import parse_non_empty
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
