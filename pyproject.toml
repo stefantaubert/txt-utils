@@ -1,7 +1,7 @@
 [project]
 name = "txt-utils"
 version = "0.0.1"
-description = "CLI to batch process lines of a single text file."
+description = "CLI to modify text files."
 readme = "README.md"
 requires-python = ">=3.6"
 license = {text = "MIT"}
@@ -12,10 +12,10 @@ maintainers = [
   {name = "Stefan Taubert", email = "stefan.taubert@posteo.me"},
 ]
 keywords = [
+  "Preprocessing",
+  "Processing",
   "Text-to-speech",
   "Speech synthesis",
-  "praat",
-  "TextGrid",
   "Utils",
   "Language",
   "Linguistics"
@@ -107,8 +107,6 @@ exclude = [
   "**/*.egg-info",
   "**/*_debug"
 ]
-venvPath = "/home/mi/.local/share/virtualenvs"
-venv = "txt-utils-YGZOO0US"
 useLibraryCodeForTypes = true
 
 [build-system]

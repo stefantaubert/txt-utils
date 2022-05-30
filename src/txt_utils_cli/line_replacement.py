@@ -1,34 +1,23 @@
-import os
 import re
 from argparse import ArgumentParser, Namespace
-from functools import partial
-from math import ceil
-from multiprocessing import Pool
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from queue import Queue
-from typing import Generator, List, Optional, Set, Tuple, cast
+from typing import cast
 
-from iterable_serialization import deserialize_iterable, serialize_iterable
-from ordered_set import OrderedSet
-from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
-                                      PronunciationDict, get_weighted_pronunciation, load_dict)
 from tqdm import tqdm
+from txt_utils_cli.default_args import add_file_arguments
 
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import add_encoding_argument, parse_existing_file, parse_non_empty
+from txt_utils_cli.helper import parse_non_empty
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
 def get_line_replacement_parser(parser: ArgumentParser):
-  parser.add_argument("file", type=parse_existing_file, help="text file")
+  parser.description = "This command replaces a regex pattern for each line."
+  add_file_arguments(parser)
   parser.add_argument("pattern", type=parse_non_empty,
-                      help="replace pattern")
+                      help="replace regex pattern")
   parser.add_argument("replace_with", type=str, metavar="replace-with",
                       help="replace pattern with this text")
-  parser.add_argument("--lsep", type=parse_non_empty, default="\n",
-                      help="line separator")
-  add_encoding_argument(parser)
   return line_replace_ns
 
 

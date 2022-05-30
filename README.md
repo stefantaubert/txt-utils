@@ -4,20 +4,26 @@
 [![PyPI](https://img.shields.io/pypi/pyversions/txt-utils.svg)](https://pypi.python.org/pypi/txt-utils)
 [![MIT](https://img.shields.io/github/license/stefantaubert/txt-utils.svg)](https://github.com/stefantaubert/txt-utils/blob/main/LICENSE)
 
-CLI to batch process lines of a single text file.
+CLI to modify text files.
 
 ## Features
 
-- merge multiple text files into one
-- remove duplicate lines
-- sort lines
-- extract vocabulary
-- transcribe words
-- replace text
-- trim units
-- remove units
+- `merge`: merge multiple text files into one
+- `extract-vocabulary`: extract unit vocabulary
+- `transcribe`: transcribe units
+- `replace`: replace text
+- `replace-line`: replace text in a line
+- `trim-units`: trim units
+- `remove-units`: remove units
+- `create-unit-occurrence-stats`: create unit occurrence statistics
 
 ## Roadmap
+
+- add tests
+- create n-grams
+- map units
+- merge units right/left
+- calculate units TF-IDF
 
 ## Installation
 
@@ -37,6 +43,14 @@ txt-utils-cli
 - tqdm
 - ordered-set >=4.1.0
 - pronunciation-dictionary >=0.0.4
+
+## License
+
+MIT License
+
+## Acknowledgments
+
+Funded by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) – Project-ID 416228727 – CRC 1410
 
 ## Citation
 

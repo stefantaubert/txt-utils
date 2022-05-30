@@ -1,28 +1,24 @@
-import os
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Generator, List, cast
+from typing import cast
 
-from ordered_set import OrderedSet
 from tqdm import tqdm
 
 from txt_utils_cli.globals import ExecutionResult
 from txt_utils_cli.helper import (ConvertToOrderedSetAction, add_encoding_argument,
-                                  parse_existing_directory, parse_existing_file,
-                                  parse_non_empty_or_whitespace, parse_path)
+                                  parse_existing_file, parse_path)
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
 def get_merging_parser(parser: ArgumentParser):
-  parser.description = "This command merges multiple files into one."
+  parser.description = "This command merges multiple text files into a single file."
   parser.add_argument("files", type=parse_existing_file,
-                      metavar="files", nargs="+", help="text files", action=ConvertToOrderedSetAction)
-  parser.add_argument("output", type=parse_path, help="output text file")
-  # parser.add_argument("--include", type=parse_non_empty_or_whitespace, nargs="+",
-  #                     action=ConvertToOrderedSetAction, default=OrderedSet((".txt",)), help="include these file types")
-  parser.add_argument("--lsep", type=str, default="\n",
+                      metavar="INPUT-FILE-PATH", nargs="+", help="text files that should be merged together", action=ConvertToOrderedSetAction)
+  parser.add_argument("output", type=parse_path,
+                      metavar="OUTPUT-FILE-PATH", help="output text file")
+  parser.add_argument("--sep", type=str, default="\n", metavar="STRING",
                       help="separate file contents with this text while merging")
-  add_encoding_argument(parser, "encoding of the text files and the output file")
+  add_encoding_argument(parser, "encoding of the input files and the output file")
   return merge_ns
 
 
@@ -53,7 +49,7 @@ def merge_ns(ns: Namespace) -> ExecutionResult:
     texts.append(text)
 
   logger.info("Merging files...")
-  text = ns.lsep.join(texts)
+  text = ns.sep.join(texts)
 
   logger.info("Saving merged output...")
   output = cast(Path, ns.output)
@@ -70,8 +66,8 @@ def merge_ns(ns: Namespace) -> ExecutionResult:
   return all_successfull, None
 
 
-def get_all_files_in_all_subfolders(directory: Path) -> Generator[Path, None, None]:
-  for root, _, files in os.walk(directory):
-    for name in files:
-      file_path = Path(root) / name
-      yield file_path
+# def get_all_files_in_all_subfolders(directory: Path) -> Generator[Path, None, None]:
+#   for root, _, files in os.walk(directory):
+#     for name in files:
+#       file_path = Path(root) / name
+#       yield file_path

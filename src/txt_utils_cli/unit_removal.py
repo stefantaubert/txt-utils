@@ -1,35 +1,20 @@
-import os
 from argparse import ArgumentParser, Namespace
-from functools import partial
-from math import ceil
-from multiprocessing import Pool
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from queue import Queue
-from typing import Generator, List, Optional, Set, Tuple, cast
+from typing import cast
 
-from iterable_serialization import deserialize_iterable, serialize_iterable
-from ordered_set import OrderedSet
-from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
-                                      PronunciationDict, get_weighted_pronunciation, load_dict)
 from tqdm import tqdm
 
+from txt_utils_cli.default_args import add_file_arguments
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import (ConvertToOrderedSetAction, ConvertToSetAction,
-                                  add_encoding_argument, get_optional, parse_existing_file,
-                                  parse_non_empty, split_adv)
+from txt_utils_cli.helper import (ConvertToSetAction, split_adv)
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
 def get_unit_removal_parser(parser: ArgumentParser):
-  parser.add_argument("file", type=parse_existing_file, help="text file")
+  parser.description = "This command removes units from lines."
+  add_file_arguments(parser, True)
   parser.add_argument("units", type=str, nargs="+", metavar="UNIT-TEXT",
                       help="remove these units", action=ConvertToSetAction)
-  parser.add_argument("--lsep", type=parse_non_empty, default="\n",
-                      help="line separator")
-  parser.add_argument("--sep", type=str, default="",
-                      help="unit separator")
-  add_encoding_argument(parser)
   return remove_units_ns
 
 

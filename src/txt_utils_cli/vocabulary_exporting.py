@@ -1,35 +1,24 @@
-import os
 from argparse import ArgumentParser, Namespace
 from functools import partial
-from math import ceil
 from multiprocessing import Pool
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from queue import Queue
-from typing import Generator, List, Optional, Set, cast
+from typing import List, Optional, Set, cast
 
-from iterable_serialization import deserialize_iterable, serialize_iterable
-from ordered_set import OrderedSet
 from tqdm import tqdm
 
+from txt_utils_cli.default_args import add_file_arguments
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import (ConvertToOrderedSetAction, add_encoding_argument, add_mp_group,
-                                  parse_existing_directory, parse_existing_file, parse_non_empty,
-                                  parse_non_empty_or_whitespace, parse_path)
+from txt_utils_cli.helper import (add_mp_group, parse_path, split_adv)
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
 def get_vocabulary_exporting_parser(parser: ArgumentParser):
-  parser.add_argument("file", type=parse_existing_file, help="text file")
+  parser.description = "This command exports the unit vocabulary."
+  add_file_arguments(parser, True)
   parser.add_argument("output", type=parse_path,
                       help="output file to write the vocabulary")
-  parser.add_argument("--lsep", type=parse_non_empty, default="\n",
-                      help="line separator")
-  parser.add_argument("--wsep", type=str, default=" ",
-                      help="unit separator")
   parser.add_argument("--include-empty", action="store_true",
                       help="include empty text in vocabulary if it occurs")
-  add_encoding_argument(parser, "encoding of the file and output")
   add_mp_group(parser)
   return extract_vocabulary_ns
 
@@ -70,7 +59,7 @@ def extract_vocabulary_ns(ns: Namespace) -> ExecutionResult:
 
   method_proxy = partial(
     get_vocab_process,
-    wsep=ns.wsep,
+    wsep=ns.sep,
   )
 
   voc = set()
@@ -125,10 +114,7 @@ def get_vocab_process(chunk_nr: int, wsep: str) -> Set[str]:
 def get_vocab(lines: List[str], wsep: str) -> Set[str]:
   voc = set()
   for line in lines:
-    if wsep == "":
-      tokens = line
-    else:
-      tokens = line.split(wsep)
+    tokens = split_adv(line, wsep)
     voc.update(tokens)
   return voc
 

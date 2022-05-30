@@ -3,7 +3,7 @@ from logging import getLogger
 import pandas.testing
 from pandas import DataFrame
 
-from txt_utils_cli.statistics_word_counts import get_df
+from txt_utils_cli.statistics_unit_counts import get_df
 
 
 def test_component():

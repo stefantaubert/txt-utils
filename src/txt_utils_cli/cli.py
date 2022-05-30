@@ -8,9 +8,8 @@ from pathlib import Path
 from pkgutil import iter_modules
 from tempfile import gettempdir
 from time import perf_counter
-from typing import Callable, Dict, Generator, List, Tuple
+from typing import Callable, Generator, List, Tuple
 
-from txt_utils_cli.duplicates_removal import get_duplicates_removal_parser
 from txt_utils_cli.globals import ExecutionResult
 from txt_utils_cli.helper import get_optional, parse_path
 from txt_utils_cli.line_replacement import get_line_replacement_parser
@@ -18,8 +17,7 @@ from txt_utils_cli.logging_configuration import (configure_root_logger, get_file
                                                  try_init_file_logger)
 from txt_utils_cli.merging import get_merging_parser
 from txt_utils_cli.replacement import get_replacement_parser
-from txt_utils_cli.sorting import get_sorting_parser
-from txt_utils_cli.statistics_word_counts import get_word_count_export_parser
+from txt_utils_cli.statistics_unit_counts import get_unit_count_export_parser
 from txt_utils_cli.transcription import get_transcription_parser
 from txt_utils_cli.trimming import get_trimming_parser
 from txt_utils_cli.unit_removal import get_unit_removal_parser
@@ -44,27 +42,25 @@ def formatter(prog):
 
 def get_parsers() -> Parsers:
   yield "merge", "merge multiple text files into one", get_merging_parser
-  yield "remove-duplicates", "remove duplicate lines", get_duplicates_removal_parser
-  yield "sort", "sort lines", get_sorting_parser
   yield "extract-vocabulary", "extract unit vocabulary", get_vocabulary_exporting_parser
   yield "transcribe", "transcribe units", get_transcription_parser
   yield "replace", "replace text", get_replacement_parser
   yield "replace-line", "replace text in a line", get_line_replacement_parser
   yield "trim-units", "trim units", get_trimming_parser
   yield "remove-units", "remove units", get_unit_removal_parser
-  yield "create-unit-occurrence-stats", "create unit occurrence statistics", get_word_count_export_parser
+  yield "create-unit-occurrence-stats", "create unit occurrence statistics", get_unit_count_export_parser
 
 
 def print_features():
   parsers = get_parsers()
   for command, description, method in parsers:
-    print(f"- {description}")
+    print(f"- `{command}`: {description}")
 
 
 def _init_parser():
   main_parser = ArgumentParser(
     formatter_class=formatter,
-    description="This program provides methods to modify lines of a text file.",
+    description="This program provides methods to modify a text file.",
   )
   main_parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
   subparsers = main_parser.add_subparsers(help="description")
@@ -176,6 +172,4 @@ def create_debug_file():
 
 
 if __name__ == "__main__":
-  print_features()
-  create_debug_file()
-  run()
+  run_prod()

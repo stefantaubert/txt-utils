@@ -1,33 +1,23 @@
-import os
 import re
 from argparse import ArgumentParser, Namespace
-from functools import partial
-from math import ceil
-from multiprocessing import Pool
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from queue import Queue
-from typing import Generator, List, Optional, Set, Tuple, cast
+from typing import cast
 
-from iterable_serialization import deserialize_iterable, serialize_iterable
-from ordered_set import OrderedSet
-from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
-                                      PronunciationDict, get_weighted_pronunciation, load_dict)
-from tqdm import tqdm
-
+from txt_utils_cli.default_args import add_file_and_enc_argument
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import add_encoding_argument, parse_existing_file, parse_non_empty
+from txt_utils_cli.helper import parse_non_empty
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
 def get_replacement_parser(parser: ArgumentParser):
-  parser.add_argument("file", type=parse_existing_file, help="text file")
-  parser.add_argument("text", type=parse_non_empty,
+  parser.description = "This command replaces all matching regex patterns in the text with a custom text."
+  add_file_and_enc_argument(parser)
+  parser.add_argument("text", type=parse_non_empty, metavar="TEXT",
                       help="replace text")
-  parser.add_argument("replace_with", type=str, metavar="replace-with",
+  parser.add_argument("replace_with", type=str, metavar="REPLACE-WITH",
                       help="replace text with this text")
-  add_encoding_argument(parser)
-  parser.add_argument("-d", "--disable-regex", action="store_true", help="disable regex parsing")
+  parser.add_argument("-d", "--disable-regex", action="store_true",
+                      help="disable parsing TEXT as regex pattern")
   return replace_ns
 
 

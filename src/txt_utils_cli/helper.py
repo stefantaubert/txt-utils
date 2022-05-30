@@ -1,15 +1,12 @@
 import argparse
 import codecs
-import os
 from argparse import ArgumentParser, ArgumentTypeError, _ArgumentGroup
-from collections import OrderedDict
 from functools import partial
 from os import cpu_count
 from pathlib import Path
 from shutil import copy
-from typing import Callable, Generator, List, Optional
-from typing import OrderedDict as OrderedDictType
-from typing import Set, Tuple, TypeVar
+from typing import Callable, List, Optional
+from typing import TypeVar
 
 from ordered_set import OrderedSet
 
@@ -72,8 +69,8 @@ class ConvertToSetAction(argparse._StoreAction):
     super().__call__(parser, namespace, val, option_string)
 
 
-def add_encoding_argument(parser: ArgumentParser, help_str: str = "encoding of the file") -> None:
-  parser.add_argument("--encoding", type=parse_codec, metavar='CODEC',
+def add_encoding_argument(parser: ArgumentParser, help_str: str = "encoding of the file", name: str = "--encoding") -> None:
+  parser.add_argument(name, type=parse_codec, metavar='CODEC',
                       help=help_str + "; see all available codecs at https://docs.python.org/3.8/library/codecs.html#standard-encodings", default=DEFAULT_ENCODING)
 
 

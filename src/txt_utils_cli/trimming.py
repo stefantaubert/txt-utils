@@ -1,36 +1,22 @@
-import os
 from argparse import ArgumentParser, Namespace
-from functools import partial
-from math import ceil
-from multiprocessing import Pool
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from queue import Queue
-from typing import Generator, List, Optional, Set, Tuple, cast
+from typing import cast
 
-from iterable_serialization import deserialize_iterable, serialize_iterable
-from ordered_set import OrderedSet
-from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
-                                      PronunciationDict, get_weighted_pronunciation, load_dict)
 from tqdm import tqdm
 
+from txt_utils_cli.default_args import add_file_arguments
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import (ConvertToOrderedSetAction, ConvertToSetAction,
-                                  add_encoding_argument, parse_existing_file, parse_non_empty)
+from txt_utils_cli.helper import (ConvertToSetAction, parse_non_empty)
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
 def get_trimming_parser(parser: ArgumentParser):
-  parser.add_argument("file", type=parse_existing_file, help="text file")
+  parser.description = "This command trims text of units."
+  add_file_arguments(parser, True)
   parser.add_argument("mode", type=str, choices=[
                       "start", "end", "both"], help="trim mode: start = only from start; end = only from end; both = start + end")
   parser.add_argument("characters", type=parse_non_empty, nargs="+",
                       help="trim these characters from each unit", action=ConvertToSetAction)
-  parser.add_argument("--lsep", type=parse_non_empty, default="\n",
-                      help="line separator")
-  parser.add_argument("--sep", type=parse_non_empty, default="",
-                      help="unit separator")
-  add_encoding_argument(parser)
   return trim_ns
 
 
@@ -56,6 +42,7 @@ def trim_ns(ns: Namespace) -> ExecutionResult:
   for i, line in enumerate(tqdm(lines, desc="Trimming", unit=" line(s)")):
     units = line.split(ns.sep)
     units = (strip_str(unit, ns.mode, trim_characters) for unit in units)
+    # why not?
     # symbols = (symbol for symbol in symbols if symbol != "")
     new_line = ns.sep.join(units)
     if line != new_line:

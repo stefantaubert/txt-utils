@@ -1,39 +1,29 @@
-import os
 from argparse import ArgumentParser, Namespace
 from functools import partial
-from math import ceil
 from multiprocessing import Pool
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from queue import Queue
-from typing import Generator, List, Optional, Set, Tuple, cast
+from typing import List, Optional, Set, Tuple, cast
 
-from iterable_serialization import deserialize_iterable, serialize_iterable
-from ordered_set import OrderedSet
 from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
                                       PronunciationDict, get_weighted_pronunciation, load_dict)
 from tqdm import tqdm
 
+from txt_utils_cli.default_args import add_file_arguments
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import (ConvertToOrderedSetAction, add_encoding_argument, add_mp_group,
-                                  get_optional, parse_existing_directory, parse_existing_file,
-                                  parse_non_empty, parse_non_empty_or_whitespace,
-                                  parse_non_negative_integer, parse_path, parse_positive_integer)
+from txt_utils_cli.helper import (add_encoding_argument, add_mp_group, get_optional,
+                                  parse_existing_file, parse_non_negative_integer, parse_positive_integer)
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
 def get_transcription_parser(parser: ArgumentParser):
-  parser.add_argument("file", type=parse_existing_file, help="text file")
+  parser.description = "This command transcribe units using a pronunciation dictionary."
+  add_file_arguments(parser, True)
   parser.add_argument("dictionary", metavar="dictionary", type=parse_existing_file,
                       help="path to the pronunciation dictionary that contains pronunciations to all occurring marks")
-  parser.add_argument("--lsep", type=parse_non_empty, default="\n",
-                      help="line separator")
-  parser.add_argument("--wsep", type=parse_non_empty, default=" ",
-                      help="word separator")
-  parser.add_argument("--psep", type=parse_non_empty, default="|",
-                      help="pronunciations separator")
+  parser.add_argument("--psep", type=str, metavar="STRING",
+                      help="pronunciations separator", default="|")
   parser.add_argument("--seed", type=get_optional(parse_non_negative_integer),
-                      help="seed for choosing the pronunciation from the dictionary (only usefull if there exist words with multiple pronunciations)", default=None)
+                      help="seed for choosing the pronunciation from the dictionary regarding their weights (only useful if there exist words with multiple pronunciations)", default=None)
   parser.add_argument("--ignore-missing", action="store_true",
                       help="keep marks missing in dictionary unchanged")
   mp_group = add_mp_group(parser)
@@ -45,7 +35,7 @@ def get_transcription_parser(parser: ArgumentParser):
 
 def add_deserialization_group(parser: ArgumentParser) -> None:
   group = parser.add_argument_group('deserialization arguments')
-  add_encoding_argument(group, "encoding of the files and the dictionary")
+  add_encoding_argument(group, "encoding of the dictionary", "--dict-encoding")
   group.add_argument("-cc", "--consider-comments", action="store_true",
                      help="consider line comments while deserialization")
   group.add_argument("-cn", "--consider-numbers", action="store_true",
@@ -108,7 +98,7 @@ def transcribe_ns(ns: Namespace) -> ExecutionResult:
 
   method_proxy = partial(
     get_vocab_process,
-    wsep=ns.wsep,
+    wsep=ns.sep,
     seed=ns.seed,
     ignore_missing=ns.ignore_missing,
     psep=ns.psep,
