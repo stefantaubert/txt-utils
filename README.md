@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/txt-utils.svg)](https://pypi.python.org/pypi/txt-utils)
 [![PyPI](https://img.shields.io/pypi/pyversions/txt-utils.svg)](https://pypi.python.org/pypi/txt-utils)
-[![MIT](https://img.shields.io/github/license/stefantaubert/txt-utils.svg)](https://github.com/stefantaubert/txt-utils/blob/main/LICENSE)
+[![MIT](https://img.shields.io/github/license/stefantaubert/txt-utils.svg)](https://github.com/stefantaubert/txt-utils/blob/master/LICENSE)
 
 CLI to modify text files.
 
