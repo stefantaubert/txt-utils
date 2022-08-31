@@ -1,5 +1,6 @@
 cff-version: 1.2.0
 title: txt-utils
+abstract: CLI to modify text files.
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -10,5 +11,7 @@ authors:
     family-names: Taubert
     affiliation: Chemnitz University of Technology
     orcid: 'https://orcid.org/0000-0002-4932-2874'
+    website: 'https://stefantaubert.com/'
 version: 0.0.1
 date-released: 2022-05-30
+license: MIT
