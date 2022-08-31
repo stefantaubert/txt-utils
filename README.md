@@ -3,6 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/txt-utils.svg)](https://pypi.python.org/pypi/txt-utils)
 [![PyPI](https://img.shields.io/pypi/pyversions/txt-utils.svg)](https://pypi.python.org/pypi/txt-utils)
 [![MIT](https://img.shields.io/github/license/stefantaubert/txt-utils.svg)](https://github.com/stefantaubert/txt-utils/blob/master/LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7037645.svg)](https://doi.org/10.5281/zenodo.7037645)
 
 CLI to modify text files.
 
