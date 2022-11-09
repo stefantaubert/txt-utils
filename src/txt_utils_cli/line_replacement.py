@@ -14,9 +14,9 @@ from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_co
 def get_line_replacement_parser(parser: ArgumentParser):
   parser.description = "This command replaces a regex pattern for each line."
   add_file_arguments(parser)
-  parser.add_argument("pattern", type=parse_non_empty,
+  parser.add_argument("pattern", type=parse_non_empty, metavar="PATTERN",
                       help="replace regex pattern")
-  parser.add_argument("replace_with", type=str, metavar="replace-with",
+  parser.add_argument("replace_with", type=str, metavar="REPLACE-WITH",
                       help="replace pattern with this text")
   return line_replace_ns
 
