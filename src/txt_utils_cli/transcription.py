@@ -29,7 +29,7 @@ def get_transcription_parser(parser: ArgumentParser):
                       help="keep marks missing in dictionary unchanged")
   mp_group = add_mp_group(parser)
   mp_group.add_argument("-sd", "--chunksize-dictionary", type=parse_positive_integer,
-                        metavar="NUMBER", help="amount of lines to chunk into one job", default=100000)
+                        metavar="NUMBER", help="amount of lines to chunk into one job while parsing the dictionary", default=100000)
   add_deserialization_group(parser)
   return transcribe_ns
 
