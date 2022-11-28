@@ -156,7 +156,7 @@ def get_vocab_process(chunk_nr: int, wsep: str, seed: Optional[int], ignore_miss
 
 
 def get_vocab(lines: List[str], wsep: str, dictionary: PronunciationDict, seed: Optional[int], ignore_missing: bool, psep: str) -> Set[str]:
-
+  new_wsep = f"{psep}{wsep}{psep}"
   new_lines = []
   for line in lines:
     words = line.split(wsep)
@@ -171,7 +171,7 @@ def get_vocab(lines: List[str], wsep: str, dictionary: PronunciationDict, seed: 
       pronunciation = get_weighted_pronunciation(pronunciations, seed)
       pronunciation_str = psep.join(pronunciation)
       words_transcribed.append(pronunciation_str)
-    new_line = wsep.join(words_transcribed)
+    new_line = new_wsep.join(words_transcribed)
     if new_line != line:
       new_lines.append(new_line)
     else:
