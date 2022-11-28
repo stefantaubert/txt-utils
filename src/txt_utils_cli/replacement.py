@@ -42,7 +42,7 @@ def replace_ns(ns: Namespace) -> ExecutionResult:
   logger.info("Replacing...")
   if ns.disable_regex:
     if ns.text not in content:
-      logger.info("File did not contained text. Nothing to replace.")
+      logger.info("File did not contained TEXT. Nothing to replace.")
       return True, False
     content = content.replace(ns.text, ns.replace_with)
   else:
