@@ -44,7 +44,8 @@ def line_replace_ns(ns: Namespace) -> ExecutionResult:
   for line_nr, line in enumerate(tqdm(lines, desc="Replacing", unit=" line(s)")):
     line_new = pattern.sub(ns.replace_with, line)
     if line_new != line:
-      logger.debug(f"Replaced \"{line}\" with \"{line_new}\".")
+      # Logging of this takes too much time
+      # logger.debug(f"Replaced \"{line}\" with \"{line_new}\".")
       lines[line_nr] = line_new
       changed_counter += 1
 
