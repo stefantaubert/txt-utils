@@ -39,6 +39,7 @@ def replace_ns(ns: Namespace) -> ExecutionResult:
     flogger.exception(ex)
     return False, False
 
+  old_content = content
   logger.info("Replacing...")
   if ns.disable_regex:
     if ns.text not in content:
@@ -49,13 +50,18 @@ def replace_ns(ns: Namespace) -> ExecutionResult:
     pattern = re.compile(ns.text)
     content = re.sub(pattern, ns.replace_with, content)
 
-  logger.info("Saving...")
-  try:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, ns.encoding)
-  except Exception as ex:
-    logger.error("File couldn't be saved!")
-    flogger.exception(ex)
-    return False, False
+  changed_anything = content != old_content
+  del old_content
+
+  if changed_anything:
+    logger.info("Saving...")
+    try:
+      path.parent.mkdir(parents=True, exist_ok=True)
+      path.write_text(content, ns.encoding)
+    except Exception as ex:
+      logger.error("File couldn't be saved!")
+      flogger.exception(ex)
+      return False, False
   del content
-  return True, True
+
+  return True, changed_anything
