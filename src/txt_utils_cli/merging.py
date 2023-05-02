@@ -13,7 +13,7 @@ from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_co
 def get_merging_parser(parser: ArgumentParser):
   parser.description = "This command merges multiple text files into a single file."
   parser.add_argument("files", type=parse_existing_file,
-                      metavar="INPUT-FILE-PATH", nargs="+", help="text files that should be merged together", action=ConvertToOrderedSetAction)
+                      metavar="INPUT-FILE-PATH", nargs="+", help="text files that should be merged together")
   parser.add_argument("output", type=parse_path,
                       metavar="OUTPUT-FILE-PATH", help="output text file")
   parser.add_argument("--sep", type=str, default="\n", metavar="STRING",
