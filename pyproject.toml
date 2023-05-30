@@ -41,7 +41,7 @@ dependencies = [
   "pandas",
   "tqdm",
   "ordered_set>=4.1.0",
-  "pronunciation_dictionary>=0.0.4",
+  "pronunciation_dictionary>=0.0.5",
 ]
 
 [project.urls]
