@@ -13,6 +13,7 @@ rope = "*"
 pytest = "*"
 autoflake = "*"
 twine = "*"
+build = "*"
 
 [packages]
 tqdm = "*"
@@ -21,4 +22,4 @@ pronunciation-dictionary = ">=0.0.4"
 pandas = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.11"

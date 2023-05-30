@@ -141,8 +141,8 @@ def parse_args(args: List[str]) -> None:
       flogger.error("Not everything was successful!")
 
     if changed_anything is not None and not changed_anything:
-      logger.info("Didn't changed anything.")
-      flogger.info("Didn't changed anything.")
+      logger.info("Didn't change anything.")
+      flogger.info("Didn't change anything.")
 
     duration = perf_counter() - start
     flogger.debug(f"Total duration (s): {duration}")

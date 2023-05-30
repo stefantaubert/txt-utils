@@ -1,9 +1,9 @@
 [project]
 name = "txt-utils"
-version = "0.0.1"
+version = "0.0.2"
 description = "CLI to modify text files."
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.8, <4"
 license = {text = "MIT"}
 authors = [
   {name = "Stefan Taubert", email = "pypi@stefantaubert.com"}
@@ -34,6 +34,7 @@ classifiers = [
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
   "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
@@ -53,14 +54,10 @@ txt-utils-cli = "txt_utils_cli.cli:run_prod"
 [tool.setuptools.packages.find]
 where = ["src"]
 include = [
-  "txt_utils",
   "txt_utils_cli"
 ]
 exclude = [
-  "txt_utils_tests",
   "txt_utils_debug",
-  "txt_utils_cli_debug",
-  "txt_utils_cli_tests",
 ]
 namespaces = true
 
@@ -68,7 +65,6 @@ namespaces = true
 log_cli = true
 log_level = "DEBUG"
 testpaths = [
-  "src/txt_utils_tests",
   "src/txt_utils_cli_tests"
 ]
 
@@ -106,6 +102,22 @@ exclude = [
   "**/*_debug"
 ]
 useLibraryCodeForTypes = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{38,39,310,311}
+isolated_build = True
+
+[testenv]
+deps = 
+  pytest
+commands = 
+  pytest
+  txt-utils-cli
+  txt-utils-cli -v
+  txt-utils-cli -h
+"""
 
 [build-system]
 requires = [

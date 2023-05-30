@@ -5,8 +5,7 @@ from typing import cast
 from tqdm import tqdm
 
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import (ConvertToOrderedSetAction, add_encoding_argument,
-                                  parse_existing_file, parse_path)
+from txt_utils_cli.helper import add_encoding_argument, parse_existing_file, parse_path
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
