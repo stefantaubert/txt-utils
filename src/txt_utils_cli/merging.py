@@ -36,7 +36,7 @@ def merge_ns(ns: Namespace) -> ExecutionResult:
   # )
 
   texts = []
-  all_successfull = True
+  all_successful = True
   for path in tqdm(ns.files, desc="Reading text files", unit=" file(s)"):
     try:
       text = path.read_text(ns.encoding)
@@ -44,7 +44,7 @@ def merge_ns(ns: Namespace) -> ExecutionResult:
       flogger(f"File: {cast(Path, path).absolute()}")
       flogger.error("File couldn't be loaded!")
       flogger.exception(ex)
-      all_successfull = False
+      all_successful = False
       continue
     texts.append(text)
 
@@ -63,7 +63,7 @@ def merge_ns(ns: Namespace) -> ExecutionResult:
     return False, None
 
   logger.info(f"Written output to: {output.absolute()}")
-  return all_successfull, None
+  return all_successful, None
 
 
 # def get_all_files_in_all_subfolders(directory: Path) -> Generator[Path, None, None]:
