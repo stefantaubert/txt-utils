@@ -21,13 +21,31 @@ def get_replacement_parser(parser: ArgumentParser):
   return replace_ns
 
 
+def replace_text(content: str, text: str, replace_with: str, disable_regex: bool) -> str:
+  logger = init_and_get_console_logger(__name__)
+
+  if disable_regex and text == replace_with:
+    return content
+
+  logger.info("Replacing...")
+  if disable_regex:
+    if text not in content:
+      logger.info("File did not contained TEXT. Nothing to replace.")
+      return content
+    new_content = content.replace(text, replace_with)
+  else:
+    pattern = re.compile(text)
+    new_content = re.sub(pattern, replace_with, content)
+  return new_content
+
+
 def replace_ns(ns: Namespace) -> ExecutionResult:
   logger = init_and_get_console_logger(__name__)
   flogger = get_file_logger()
 
-  if ns.text == ns.replace_with:
-    logger.error("Parameter 'text' and 'replace_with' need to be different!")
-    return False, False
+  # if ns.disable_regex and ns.text == ns.replace_with:
+  #   logger.error("Parameter 'text' and 'replace_with' need to be different!")
+  #   return False, False
 
   path = cast(Path, ns.file)
 
@@ -39,29 +57,20 @@ def replace_ns(ns: Namespace) -> ExecutionResult:
     flogger.exception(ex)
     return False, False
 
-  old_content = content
-  logger.info("Replacing...")
-  if ns.disable_regex:
-    if ns.text not in content:
-      logger.info("File did not contained TEXT. Nothing to replace.")
-      return True, False
-    content = content.replace(ns.text, ns.replace_with)
-  else:
-    pattern = re.compile(ns.text)
-    content = re.sub(pattern, ns.replace_with, content)
+  new_content = replace_text(content, ns.text, ns.replace_with, ns.disable_regex)
 
-  changed_anything = content != old_content
-  del old_content
+  changed_anything = new_content != content
+  del content
 
   if changed_anything:
     logger.info("Saving...")
     try:
       path.parent.mkdir(parents=True, exist_ok=True)
-      path.write_text(content, ns.encoding)
+      path.write_text(new_content, ns.encoding)
     except Exception as ex:
       logger.error("File couldn't be saved!")
       flogger.exception(ex)
       return False, False
-  del content
+  del new_content
 
   return True, changed_anything

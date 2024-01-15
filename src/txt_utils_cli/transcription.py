@@ -47,40 +47,14 @@ def add_deserialization_group(parser: ArgumentParser) -> None:
                      help="consider weights")
 
 
-def transcribe_ns(ns: Namespace) -> ExecutionResult:
+def transcribe_text_using_dict(pronunciation_dictionary: PronunciationDict, content: str, lsep: str, psep: str, wsep: str, seed: Optional[int], ignore_missing: bool, n_jobs: int, maxtasksperchild: Optional[int], chunksize: int) -> str:
   logger = init_and_get_console_logger(__name__)
   flogger = get_file_logger()
-  path = cast(Path, ns.file)
-  logger.info("Loading...")
-  try:
-    content = path.read_text(ns.encoding)
-  except Exception as ex:
-    logger.error("File couldn't be loaded!")
-    flogger.exception(ex)
-    return False, False
-
-  mp_options = MultiprocessingOptions(ns.n_jobs, ns.maxtasksperchild, ns.chunksize_dictionary)
-  options = DeserializationOptions(ns.consider_comments, ns.consider_numbers,
-                                   ns.consider_pronunciation_comments, ns.consider_weights)
 
   logger.info("Splitting lines...")
-  lines = content.split(ns.lsep)
+  lines = content.split(lsep)
+  # TODO maybe move it out and use lines as arg to be able to delete it
   del content
-
-  logger.info("Loading dictionary...")
-  try:
-    pronunciation_dictionary = load_dict(ns.dictionary, ns.encoding, options, mp_options)
-  except Exception as ex:
-    logger = init_and_get_console_logger(__name__)
-    logger.error("Pronunciation dictionary couldn't be read!")
-    flogger = get_file_logger()
-    flogger.exception(ex)
-    return False, False
-
-  n_jobs = cast(int, ns.n_jobs)
-  #n_jobs = 1
-  chunksize = cast(int, ns.chunksize)
-  maxtasksperchild = cast(int, ns.maxtasksperchild)
 
   flogger.debug(f"Lines: {len(lines)}")
   flogger.debug(f"Chunksize: {chunksize}")
@@ -99,10 +73,10 @@ def transcribe_ns(ns: Namespace) -> ExecutionResult:
 
   method_proxy = partial(
     get_vocab_process,
-    wsep=ns.sep,
-    seed=ns.seed,
-    ignore_missing=ns.ignore_missing,
-    psep=ns.psep,
+    wsep=wsep,
+    seed=seed,
+    ignore_missing=ignore_missing,
+    psep=psep,
   )
 
   with Pool(
@@ -121,9 +95,41 @@ def transcribe_ns(ns: Namespace) -> ExecutionResult:
     for chunk_nr in range(len(chunks))
     for line_i, line in enumerate(result[chunk_nr])
   )
-  new_content = ns.lsep.join(new_lines)
+  new_content = lsep.join(new_lines)
   del chunks
   del result
+  return new_content
+
+
+def transcribe_ns(ns: Namespace) -> ExecutionResult:
+  logger = init_and_get_console_logger(__name__)
+  flogger = get_file_logger()
+  path = cast(Path, ns.file)
+  logger.info("Loading...")
+  try:
+    content = path.read_text(ns.encoding)
+  except Exception as ex:
+    logger.error("File couldn't be loaded!")
+    flogger.exception(ex)
+    return False, False
+
+  mp_options = MultiprocessingOptions(ns.n_jobs, ns.maxtasksperchild, ns.chunksize_dictionary)
+  options = DeserializationOptions(ns.consider_comments, ns.consider_numbers,
+                                   ns.consider_pronunciation_comments, ns.consider_weights)
+
+  logger.info("Loading dictionary...")
+  try:
+    pronunciation_dictionary = load_dict(ns.dictionary, ns.encoding, options, mp_options)
+  except Exception as ex:
+    logger = init_and_get_console_logger(__name__)
+    logger.error("Pronunciation dictionary couldn't be read!")
+    flogger = get_file_logger()
+    flogger.exception(ex)
+    return False, False
+
+  new_content = transcribe_text_using_dict(pronunciation_dictionary, content, ns.lsep, ns.psep,
+                                           ns.sep, ns.seed, ns.ignore_missing, ns.n_jobs, ns.maxtasksperchild, ns.chunksize)
+
   logger.info("Saving...")
 
   try:

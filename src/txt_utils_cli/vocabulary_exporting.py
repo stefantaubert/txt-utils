@@ -21,6 +21,58 @@ def get_vocabulary_exporting_parser(parser: ArgumentParser):
                       help="include empty text in vocabulary if it occurs")
   add_mp_group(parser)
   return extract_vocabulary_ns
+from ordered_set import OrderedSet
+
+
+def extract_vocabulary_from_text(content: str, lsep: str, sep: str, include_empty: bool, n_jobs: int, maxtasksperchild: Optional[int], chunksize: int) -> OrderedSet[str]:
+  logger = init_and_get_console_logger(__name__)
+  flogger = get_file_logger()
+  logger.info("Splitting lines...")
+  lines = content.split(lsep)
+  del content
+
+  n_jobs = cast(int, n_jobs)
+  chunksize = cast(int, chunksize)
+  maxtasksperchild = cast(int, maxtasksperchild)
+
+  flogger.debug(f"Lines: {len(lines)}")
+  flogger.debug(f"Chunksize: {chunksize}")
+  flogger.debug(f"Maxtask: {maxtasksperchild}")
+  flogger.debug(f"Jobs: {n_jobs}")
+
+  chunks = get_chunks(lines, chunksize)
+  del lines
+
+  flogger.debug(f"Chunks: {len(chunks)}")
+
+  amount_of_jobs_required = len(chunks)
+  n_jobs = min(n_jobs, amount_of_jobs_required)
+  flogger.debug(f"Jobs (final): {n_jobs}")
+
+  method_proxy = partial(
+    get_vocab_process,
+    wsep=sep,
+  )
+
+  voc = set()
+  with Pool(
+    processes=n_jobs,
+    initializer=__init_pool,
+    initargs=(chunks,),
+    maxtasksperchild=maxtasksperchild,
+  ) as pool:
+    iterator = pool.imap_unordered(method_proxy, range(len(chunks)), chunksize=1)
+    iterator = tqdm(iterator, total=len(chunks), desc="Processing", unit=" chunk(s)")
+    voc.update(*iterator)
+  del chunks
+
+  if not include_empty and "" in voc:
+    voc.remove("")
+
+  logger.info(f"Extracted vocabulary size: {len(voc)}")
+  result = OrderedSet(sorted(voc))
+
+  return result
 
 
 def extract_vocabulary_ns(ns: Namespace) -> ExecutionResult:
