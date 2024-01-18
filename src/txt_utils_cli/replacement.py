@@ -1,8 +1,8 @@
-import re
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from typing import cast
 
+from txt_utils.replacement import replace_text
 from txt_utils_cli.default_args import add_file_and_enc_argument
 from txt_utils_cli.globals import ExecutionResult
 from txt_utils_cli.helper import parse_non_empty
@@ -20,23 +20,6 @@ def get_replacement_parser(parser: ArgumentParser):
                       help="disable parsing TEXT as regex pattern")
   return replace_ns
 
-
-def replace_text(content: str, text: str, replace_with: str, disable_regex: bool) -> str:
-  logger = init_and_get_console_logger(__name__)
-
-  if disable_regex and text == replace_with:
-    return content
-
-  logger.info("Replacing...")
-  if disable_regex:
-    if text not in content:
-      logger.info("File did not contained TEXT. Nothing to replace.")
-      return content
-    new_content = content.replace(text, replace_with)
-  else:
-    pattern = re.compile(text)
-    new_content = re.sub(pattern, replace_with, content)
-  return new_content
 
 
 def replace_ns(ns: Namespace) -> ExecutionResult:
