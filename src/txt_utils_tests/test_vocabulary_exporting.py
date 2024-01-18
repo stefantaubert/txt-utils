@@ -1,5 +1,5 @@
 
-from txt_utils_cli.vocabulary_exporting import get_vocab
+from txt_utils.vocabulary_exporting import get_vocab
 
 
 def test_get_vocab__empty_sep():

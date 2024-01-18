@@ -65,6 +65,7 @@ namespaces = true
 log_cli = true
 log_level = "DEBUG"
 testpaths = [
+  "src/txt_utils_tests",
   "src/txt_utils_cli_tests"
 ]
 
