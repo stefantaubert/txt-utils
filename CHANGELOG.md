@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `transcribe_text_using_dict`
   - `extract_vocabulary_from_text`
 - support for Python 3.12
+- mypy support
 
 ### Changed
 
@@ -36,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/stefantaubert/waveglow/compare/v0.0.2...HEAD
-[0.0.2]: https://github.com/stefantaubert/pronunciation-dictionary/compare/v0.0.1...v0.0.2
-[0.0.1]: https://github.com/stefantaubert/waveglow/releases/tag/v0.0.1
+[unreleased]: https://github.com/stefantaubert/txt-utils/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/stefantaubert/txt-utils/compare/v0.0.2...v0.0.3
+[0.0.2]: https://github.com/stefantaubert/txt-utils/compare/v0.0.1...v0.0.2
+[0.0.1]: https://github.com/stefantaubert/txt-utils/releases/tag/v0.0.1

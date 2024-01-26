@@ -14,6 +14,9 @@ pytest = "*"
 autoflake = "*"
 twine = "*"
 build = "*"
+mypy = "*"
+pandas-stubs = "*"
+types-tqdm = "*"
 
 [packages]
 tqdm = "*"

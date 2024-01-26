@@ -1,7 +1,7 @@
 from functools import partial
 from logging import getLogger
 from multiprocessing import Pool
-from typing import List, Optional, Set, Tuple
+from typing import List, Optional, Tuple
 
 from pronunciation_dictionary import PronunciationDict, get_weighted_pronunciation
 from tqdm import tqdm
@@ -44,8 +44,7 @@ def transcribe_text_using_dict(content: str, pronunciation_dictionary: Pronuncia
     initargs=(chunks, pronunciation_dictionary),
     maxtasksperchild=maxtasksperchild,
   ) as pool:
-    iterator = pool.imap_unordered(method_proxy, range(len(chunks)), chunksize=1)
-    iterator = tqdm(iterator, total=len(chunks), desc="Processing",
+    iterator = tqdm(pool.imap_unordered(method_proxy, range(len(chunks)), chunksize=1), total=len(chunks), desc="Processing",
                     unit=" chunk(s)", disable=silent)
     result = dict(iterator)
 
@@ -68,20 +67,22 @@ def get_chunks(keys: List[str], chunk_size: Optional[int]) -> List[List[str]]:
   return chunked_list
 
 
-process_chunks: List[str] = None
-process_dict: PronunciationDict = None
+process_chunks: Optional[List[List[str]]] = None
+process_dict: Optional[PronunciationDict] = None
 
 
-def get_vocab_process(chunk_nr: int, wsep: str, seed: Optional[int], ignore_missing: bool, psep: str) -> Tuple[int, List[str]]:
+def get_vocab_process(chunk_nr: int, wsep: str, seed: Optional[int], ignore_missing: bool, psep: str) -> Tuple[int, List[Optional[str]]]:
   global process_chunks
   global process_dict
+  assert process_chunks is not None
+  assert process_dict is not None
   chunk = process_chunks[chunk_nr]
   return chunk_nr, get_vocab(chunk, wsep, process_dict, seed, ignore_missing, psep)
 
 
-def get_vocab(lines: List[str], wsep: str, dictionary: PronunciationDict, seed: Optional[int], ignore_missing: bool, psep: str) -> Set[str]:
+def get_vocab(lines: List[str], wsep: str, dictionary: PronunciationDict, seed: Optional[int], ignore_missing: bool, psep: str) -> List[Optional[str]]:
   new_wsep = f"{psep}{wsep}{psep}"
-  new_lines = []
+  new_lines: List[Optional[str]] = []
   for line in lines:
     words = line.split(wsep)
     words_transcribed = []

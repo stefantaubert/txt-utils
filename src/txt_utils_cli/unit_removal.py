@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from txt_utils_cli.default_args import add_file_arguments
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import ConvertToSetAction, split_adv
+from txt_utils_cli.helper import ConvertToOrderedSetAction, split_adv
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
@@ -14,7 +14,7 @@ def get_unit_removal_parser(parser: ArgumentParser):
   parser.description = "This command removes units from lines."
   add_file_arguments(parser, True)
   parser.add_argument("units", type=str, nargs="+", metavar="UNIT-TEXT",
-                      help="remove these units", action=ConvertToSetAction)
+                      help="remove these units", action=ConvertToOrderedSetAction)
   return remove_units_ns
 
 
@@ -37,8 +37,8 @@ def remove_units_ns(ns: Namespace) -> ExecutionResult:
 
   changed_count = 0
   for i, line in enumerate(tqdm(lines, desc="Removing units", unit=" line(s)")):
-    units = split_adv(line, ns.sep)
-    units = (unit for unit in units if unit not in ns.units)
+    units_l = split_adv(line, ns.sep)
+    units = (unit for unit in units_l if unit not in ns.units)
     new_line = ns.sep.join(units)
     if line != new_line:
       changed_count += 1

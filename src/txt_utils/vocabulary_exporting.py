@@ -38,15 +38,14 @@ def extract_vocabulary_from_text(content: str, *, line_sep: str = "\n", word_sep
     wsep=word_sep,
   )
 
-  voc = set()
+  voc: Set[str] = set()
   with Pool(
     processes=n_jobs,
     initializer=__init_pool,
     initargs=(chunks,),
     maxtasksperchild=maxtasksperchild,
   ) as pool:
-    iterator = pool.imap_unordered(method_proxy, range(len(chunks)), chunksize=1)
-    iterator = tqdm(iterator, total=len(chunks), desc="Processing",
+    iterator = tqdm(pool.imap_unordered(method_proxy, range(len(chunks)), chunksize=1), total=len(chunks), desc="Processing",
                     unit=" chunk(s)", disable=silent)
     voc.update(*iterator)
   del chunks
@@ -67,12 +66,14 @@ def get_chunks(keys: List[str], chunk_size: Optional[int]) -> List[List[str]]:
   return chunked_list
 
 
-process_chunks: List[str] = None
+process_chunks: Optional[List[List[str]]] = None
 
 
 def get_vocab_process(chunk_nr: int, wsep: str) -> Set[str]:
   global process_chunks
+  assert process_chunks is not None
   chunk = process_chunks[chunk_nr]
+  assert chunk is not None
   return get_vocab(chunk, wsep)
 
 

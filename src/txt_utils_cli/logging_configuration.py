@@ -1,12 +1,8 @@
 import logging
 import os
 from logging import DEBUG, Formatter, Handler, Logger, LogRecord, StreamHandler, getLogger
-from logging.handlers import QueueHandler
 from pathlib import Path
-from queue import Queue
-from typing import Dict, Generator, List, Tuple
-
-from ordered_set import OrderedSet
+from typing import List
 
 # class StoreRecordsHandler(Handler):
 # slower than other impl (maybe due to lock-things)
@@ -27,7 +23,7 @@ from ordered_set import OrderedSet
 
 class StoreRecordsHandler():
   def __init__(self) -> None:
-    self.__records = []
+    self.__records: List[LogRecord] = []
     self.level = DEBUG
 
   def handle(self, record) -> None:
@@ -83,49 +79,6 @@ def init_and_get_console_logger(name: str) -> Logger:
   assert len(logger.handlers) == 0
   add_console_out(logger)
   return logger
-
-
-def init_file_stem_loggers(file_stems: OrderedSet[str]) -> Dict[str, Queue]:
-  logging_queues = dict.fromkeys(file_stems)
-  for k in file_stems:
-    logger = getLogger(k)
-    logger.propagate = False
-    q = Queue(-1)
-    logging_queues[k] = q
-    handler = QueueHandler(q)
-    logger.addHandler(handler)
-
-  return logging_queues
-
-
-def init_file_stem_logger_lists(file_stems: OrderedSet[str]) -> Dict[str, List[Tuple[int, str]]]:
-  logging_queues = dict.fromkeys(file_stems)
-  for k in file_stems:
-    logging_queues[k] = []
-  return logging_queues
-
-
-def get_file_stem_loggers(file_stems: OrderedSet[str]) -> Generator[Logger, None, None]:
-  for k in file_stems:
-    logger = getLogger(k)
-    yield logger
-
-
-def write_file_stem_loggers_to_file_logger(queues: Dict[str, Queue]) -> None:
-  flogger = get_file_logger()
-  for k, q in queues.items():
-    flogger.info(f"Log messages for file: {k}")
-    entries = list(q.queue)
-    for x in entries:
-      flogger.handle(x)
-
-
-def write_file_stem_logger_lists_to_file_logger(lists: Dict[str, List[Tuple[int, str]]]) -> None:
-  flogger = get_file_logger()
-  for k, l in lists.items():
-    flogger.info(f"Log messages for file: {k}")
-    for lvl, msg in l:
-      flogger.log(lvl, msg)
 
 
 def set_console_formatter(handler: Handler) -> None:

@@ -40,7 +40,7 @@ def merge_ns(ns: Namespace) -> ExecutionResult:
     try:
       text = path.read_text(ns.encoding)
     except Exception as ex:
-      flogger(f"File: {cast(Path, path).absolute()}")
+      flogger.debug(f"File: {cast(Path, path).absolute()}")
       flogger.error("File couldn't be loaded!")
       flogger.exception(ex)
       all_successful = False

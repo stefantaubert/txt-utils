@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from txt_utils_cli.default_args import add_file_arguments
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import ConvertToSetAction, parse_non_empty
+from txt_utils_cli.helper import ConvertToOrderedSetAction, parse_non_empty
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
@@ -16,7 +16,7 @@ def get_trimming_parser(parser: ArgumentParser):
   parser.add_argument("mode", type=str, choices=[
                       "start", "end", "both"], help="trim mode: start = only from start; end = only from end; both = start + end")
   parser.add_argument("characters", type=parse_non_empty, nargs="+",
-                      help="trim these characters from each unit", action=ConvertToSetAction)
+                      help="trim these characters from each unit", action=ConvertToOrderedSetAction)
   return trim_ns
 
 
@@ -40,8 +40,8 @@ def trim_ns(ns: Namespace) -> ExecutionResult:
   changed_anything = False
   trim_characters = ''.join(ns.characters)
   for i, line in enumerate(tqdm(lines, desc="Trimming", unit=" line(s)")):
-    units = line.split(ns.sep)
-    units = (strip_str(unit, ns.mode, trim_characters) for unit in units)
+    units_l = line.split(ns.sep)
+    units = (strip_str(unit, ns.mode, trim_characters) for unit in units_l)
     # why not?
     # symbols = (symbol for symbol in symbols if symbol != "")
     new_line = ns.sep.join(units)

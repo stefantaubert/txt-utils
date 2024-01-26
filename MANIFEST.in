@@ -1,0 +1,25 @@
+graft \
+  src/txt_utils_tests/
+  src/txt_utils_cli_tests/
+
+include \
+  pylintrc \
+  AUTHORS.txt \
+  CHANGELOG.md \
+  CODE_OF_CONDUCT.md \
+  CONTRIBUTING.md \
+  CITATION.cff \
+  LICENSE \
+  MANIFEST.in \
+  Pipfile \
+  Pipfile.lock \
+  README.md \
+  pyproject.toml \
+  setup.cfg
+
+global-exclude \
+  *.py[co] \
+  .DS_Store
+
+prune .*/
+prune **/__pycache__

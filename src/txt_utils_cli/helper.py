@@ -1,11 +1,11 @@
 import argparse
 import codecs
-from argparse import ArgumentParser, ArgumentTypeError, _ArgumentGroup
+from argparse import ArgumentTypeError, _ActionsContainer, _ArgumentGroup
 from functools import partial
 from os import cpu_count
 from pathlib import Path
 from shutil import copy
-from typing import Callable, List, Optional, TypeVar
+from typing import Callable, List, Optional, Sequence, TypeVar
 
 from ordered_set import OrderedSet
 
@@ -53,42 +53,35 @@ def get_chunks(keys: OrderedSet[str], chunk_size: Optional[int]) -> List[Ordered
 
 
 class ConvertToOrderedSetAction(argparse._StoreAction):
-  def __call__(self, parser: argparse.ArgumentParser, namespace: argparse.Namespace, values: Optional[List], option_string: Optional[str] = None):
-    val = None
+  def __call__(self, parser: argparse.ArgumentParser, namespace: argparse.Namespace, values: Optional[Sequence], option_string: Optional[str] = None):
+    # Note: normal set is not possible because set is not a Sequence
+    val: Optional[OrderedSet] = None
     if values is not None:
       val = OrderedSet(values)
     super().__call__(parser, namespace, val, option_string)
 
 
-class ConvertToSetAction(argparse._StoreAction):
-  def __call__(self, parser: argparse.ArgumentParser, namespace: argparse.Namespace, values: Optional[List], option_string: Optional[str] = None):
-    val = None
-    if values is not None:
-      val = set(values)
-    super().__call__(parser, namespace, val, option_string)
-
-
-def add_encoding_argument(parser: ArgumentParser, help_str: str = "encoding of the file", name: str = "--encoding") -> None:
+def add_encoding_argument(parser: _ActionsContainer, help_str: str = "encoding of the file", name: str = "--encoding") -> None:
   parser.add_argument(name, type=parse_codec, metavar='CODEC',
                       help=help_str + "; see all available codecs at https://docs.python.org/3.8/library/codecs.html#standard-encodings", default=DEFAULT_ENCODING)
 
 
-def add_overwrite_argument(parser: ArgumentParser) -> None:
+def add_overwrite_argument(parser: _ActionsContainer) -> None:
   parser.add_argument("-o", "--overwrite", action="store_true",
                       help="overwrite existing files")
 
 
-def add_output_directory_argument(parser: ArgumentParser) -> None:
+def add_output_directory_argument(parser: _ActionsContainer) -> None:
   parser.add_argument("-out", "--output-directory", metavar='PATH', type=get_optional(parse_path),
                       help="directory where to output the grids if not to the same directory")
 
 
-def add_directory_argument(parser: ArgumentParser, help_str: str = "directory containing the grids") -> None:
+def add_directory_argument(parser: _ActionsContainer, help_str: str = "directory containing the grids") -> None:
   parser.add_argument("directory", type=parse_existing_directory, metavar="directory",
                       help=help_str)
 
 
-def add_mp_group(parser: ArgumentParser) -> _ArgumentGroup:
+def add_mp_group(parser: _ActionsContainer) -> _ArgumentGroup:
   group = parser.add_argument_group("multiprocessing arguments")
   add_n_jobs_argument(group)
   add_chunksize_argument(group)
@@ -96,9 +89,12 @@ def add_mp_group(parser: ArgumentParser) -> _ArgumentGroup:
   return group
 
 
-def add_n_jobs_argument(parser: ArgumentParser) -> None:
+def add_n_jobs_argument(parser: _ActionsContainer) -> None:
+  cpu_c = cpu_count()
+  if cpu_c is None:
+    cpu_c = 1
   parser.add_argument("-j", "--n-jobs", metavar='N', type=int,
-                      choices=range(1, cpu_count() + 1), default=DEFAULT_N_JOBS, help="amount of parallel cpu jobs")
+                      choices=range(1, cpu_c + 1), default=DEFAULT_N_JOBS, help="amount of parallel cpu jobs")
 
 
 def parse_codec(value: str) -> str:
@@ -168,9 +164,9 @@ def parse_non_empty_or_whitespace(value: str) -> str:
 
 
 def parse_float(value: str) -> float:
-  pvalue = parse_required(value)
+  pvalue_str = parse_required(value)
   try:
-    pvalue = float(pvalue)
+    pvalue = float(pvalue_str)
   except ValueError as error:
     raise ArgumentTypeError("Value needs to be a decimal number!") from error
   return pvalue
@@ -191,10 +187,10 @@ def parse_non_negative_float(value: str) -> float:
 
 
 def parse_integer(value: str) -> int:
-  pvalue = parse_required(value)
-  if not pvalue.isdigit():
+  pvalue_str = parse_required(value)
+  if not pvalue_str.isdigit():
     raise ArgumentTypeError("Value needs to be an integer!")
-  pvalue = int(pvalue)
+  pvalue = int(pvalue_str)
   return pvalue
 
 
@@ -212,12 +208,12 @@ def parse_non_negative_integer(value: str) -> int:
   return pvalue
 
 
-def add_chunksize_argument(parser: ArgumentParser, target: str = "lines", default: int = DEFAULT_CHUNKSIZE) -> None:
+def add_chunksize_argument(parser: _ActionsContainer, target: str = "lines", default: int = DEFAULT_CHUNKSIZE) -> None:
   parser.add_argument("-s", "--chunksize", type=parse_positive_integer, metavar="NUMBER",
                       help=f"amount of {target} to chunk into one job", default=default)
 
 
-def add_maxtaskperchild_argument(parser: ArgumentParser) -> None:
+def add_maxtaskperchild_argument(parser: _ActionsContainer) -> None:
   parser.add_argument("-m", "--maxtasksperchild", type=get_optional(parse_positive_integer), metavar="NUMBER",
                       help="amount of tasks per child", default=DEFAULT_MAXTASKSPERCHILD)
 
@@ -228,7 +224,7 @@ def copy_file(file_in: Path, file_out: Path) -> None:
 
 
 def save_text(path: Path, text: str, encoding: str) -> None:
-  #logger = getLogger(__name__)
-  #logger.debug("Saving text...")
+  # logger = getLogger(__name__)
+  # logger.debug("Saving text...")
   path.parent.mkdir(parents=True, exist_ok=True)
   path.write_text(text, encoding=encoding)
