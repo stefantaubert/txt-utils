@@ -1,15 +1,11 @@
 from argparse import ArgumentParser, Namespace
-from collections import Counter
-from logging import Logger
 from pathlib import Path
 from typing import cast
 
-from pandas import DataFrame
-from tqdm import tqdm
-
+from txt_utils.statistics_unit_counts import get_unit_count_statistics
 from txt_utils_cli.default_args import add_file_arguments
 from txt_utils_cli.globals import ExecutionResult
-from txt_utils_cli.helper import parse_path, split_adv
+from txt_utils_cli.helper import parse_path
 from txt_utils_cli.logging_configuration import get_file_logger, init_and_get_console_logger
 
 
@@ -32,7 +28,7 @@ def get_word_count_ns(ns: Namespace) -> ExecutionResult:
     flogger.exception(ex)
     return False, False
 
-  df = get_df(content, ns.lsep, ns.sep, logger)
+  df = get_unit_count_statistics(content, line_sep=ns.lsep, word_sep=ns.sep, silent=False)
 
   logger.info("Saving...")
 
@@ -45,22 +41,3 @@ def get_word_count_ns(ns: Namespace) -> ExecutionResult:
     return False, False
   logger.info(f"Saved output to: \"{ns.output.absolute()}\".")
   return True, True
-
-
-def get_df(content: str, lsep: str, sep: str, logger: Logger) -> DataFrame:
-  logger.info("Splitting lines...")
-  lines = content.split(lsep)
-  del content
-
-  total_counter = Counter()
-  lines = tqdm(lines, desc="Calculating counts", unit=" line(s)")
-  for line in lines:
-    total_counter.update(split_adv(line, sep))
-
-  logger.debug("Creating csv...")
-  columns = ["# Occurrences", "Unit"]
-  df = DataFrame([(v, k) for k, v in total_counter.items()], columns=columns)
-
-  logger.debug("Sorting csv...")
-  df.sort_values(["# Occurrences", "Unit"], ascending=[0, 1], inplace=True, ignore_index=True)
-  return df

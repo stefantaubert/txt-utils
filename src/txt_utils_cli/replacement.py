@@ -21,7 +21,6 @@ def get_replacement_parser(parser: ArgumentParser):
   return replace_ns
 
 
-
 def replace_ns(ns: Namespace) -> ExecutionResult:
   logger = init_and_get_console_logger(__name__)
   flogger = get_file_logger()
@@ -40,7 +39,7 @@ def replace_ns(ns: Namespace) -> ExecutionResult:
     flogger.exception(ex)
     return False, False
 
-  new_content = replace_text(content, ns.text, ns.replace_with, ns.disable_regex)
+  new_content = replace_text(content, ns.text, ns.replace_with, disable_regex=ns.disable_regex)
 
   changed_anything = new_content != content
   del content

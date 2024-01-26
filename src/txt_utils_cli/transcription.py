@@ -70,8 +70,10 @@ def transcribe_ns(ns: Namespace) -> ExecutionResult:
     flogger.exception(ex)
     return False, False
 
-  new_content = transcribe_text_using_dict(pronunciation_dictionary, content, ns.lsep, ns.psep,
-                                           ns.sep, ns.seed, ns.ignore_missing, ns.n_jobs, ns.maxtasksperchild, ns.chunksize, silent=False)
+  new_content = transcribe_text_using_dict(
+    content, pronunciation_dictionary,
+    line_sep=ns.lsep, phoneme_sep=ns.psep, word_sep=ns.sep, seed=ns.seed, ignore_missing=ns.ignore_missing, n_jobs=ns.n_jobs, maxtasksperchild=ns.maxtasksperchild, chunksize=ns.chunksize, silent=False,
+  )
 
   logger.info("Saving...")
 

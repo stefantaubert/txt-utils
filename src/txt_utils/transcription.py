@@ -7,11 +7,11 @@ from pronunciation_dictionary import PronunciationDict, get_weighted_pronunciati
 from tqdm import tqdm
 
 
-def transcribe_text_using_dict(pronunciation_dictionary: PronunciationDict, content: str, lsep: str, psep: str, wsep: str, seed: Optional[int], ignore_missing: bool, n_jobs: int, maxtasksperchild: Optional[int], chunksize: int, silent: bool = False) -> str:
+def transcribe_text_using_dict(content: str, pronunciation_dictionary: PronunciationDict, *, line_sep: str = "\n", word_sep: str = " ", phoneme_sep: str = "|", seed: Optional[int] = None, ignore_missing: bool = False, n_jobs: int = 4, maxtasksperchild: Optional[int] = None, chunksize: int = 10_000, silent: bool = False) -> str:
   logger = getLogger(__name__)
 
   logger.info("Splitting lines...")
-  lines = content.split(lsep)
+  lines = content.split(line_sep)
   # TODO maybe move it out and use lines as arg to be able to delete it
   del content
 
@@ -32,10 +32,10 @@ def transcribe_text_using_dict(pronunciation_dictionary: PronunciationDict, cont
 
   method_proxy = partial(
     get_vocab_process,
-    wsep=wsep,
+    wsep=word_sep,
     seed=seed,
     ignore_missing=ignore_missing,
-    psep=psep,
+    psep=phoneme_sep,
   )
 
   with Pool(
@@ -45,7 +45,8 @@ def transcribe_text_using_dict(pronunciation_dictionary: PronunciationDict, cont
     maxtasksperchild=maxtasksperchild,
   ) as pool:
     iterator = pool.imap_unordered(method_proxy, range(len(chunks)), chunksize=1)
-    iterator = tqdm(iterator, total=len(chunks), desc="Processing", unit=" chunk(s)", disable=silent)
+    iterator = tqdm(iterator, total=len(chunks), desc="Processing",
+                    unit=" chunk(s)", disable=silent)
     result = dict(iterator)
 
   logger.info("Rejoining lines...")
@@ -54,7 +55,7 @@ def transcribe_text_using_dict(pronunciation_dictionary: PronunciationDict, cont
     for chunk_nr in range(len(chunks))
     for line_i, line in enumerate(result[chunk_nr])
   )
-  new_content = lsep.join(new_lines)
+  new_content = line_sep.join(new_lines)
   del chunks
   del result
   return new_content

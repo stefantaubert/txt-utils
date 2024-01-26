@@ -94,64 +94,71 @@ def parse_args(args: List[str]) -> None:
 
   try:
     ns = parser.parse_args(args)
-  except SystemExit:
-    # invalid command supplied
-    return
+  except SystemExit as error:
+    error_code = error.args[0]
+    # -v -> 0; invalid arg -> 2
+    sys.exit(error_code)
 
-  if hasattr(ns, INVOKE_HANDLER_VAR):
-    invoke_handler: Callable[..., ExecutionResult] = getattr(ns, INVOKE_HANDLER_VAR)
-    delattr(ns, INVOKE_HANDLER_VAR)
-    log_to_file = ns.log is not None
-    if log_to_file:
-      log_to_file = try_init_file_logger(ns.log, local_debugging or ns.debug)
-      if not log_to_file:
-        logger.warning("Logging to file is not possible.")
+  if local_debugging:
+    logger.debug(f"Parsed arguments: {str(ns)}")
 
-    flogger = get_file_logger()
-    if not local_debugging:
-      sys_version = sys.version.replace('\n', '')
-      flogger.debug(f"CLI version: {__version__}")
-      flogger.debug(f"Python version: {sys_version}")
-      flogger.debug("Modules: %s", ', '.join(sorted(p.name for p in iter_modules())))
-
-      my_system = platform.uname()
-      flogger.debug(f"System: {my_system.system}")
-      flogger.debug(f"Node Name: {my_system.node}")
-      flogger.debug(f"Release: {my_system.release}")
-      flogger.debug(f"Version: {my_system.version}")
-      flogger.debug(f"Machine: {my_system.machine}")
-      flogger.debug(f"Processor: {my_system.processor}")
-
-    flogger.debug(f"Received arguments: {str(args)}")
-    flogger.debug(f"Parsed arguments: {str(ns)}")
-
-    start = perf_counter()
-    success, changed_anything = invoke_handler(ns)
-
-    if success:
-      logger.info(f"{CONSOLE_PNT_GREEN}Everything was successful!{CONSOLE_PNT_RST}")
-      flogger.info("Everything was successful!")
-    else:
-      if log_to_file:
-        logger.error(
-          "Not everything was successful! See log for details.")
-      else:
-        logger.error(
-          "Not everything was successful!")
-      flogger.error("Not everything was successful!")
-
-    if changed_anything is not None and not changed_anything:
-      logger.info("Didn't change anything.")
-      flogger.info("Didn't change anything.")
-
-    duration = perf_counter() - start
-    flogger.debug(f"Total duration (s): {duration}")
-
-    if log_to_file:
-      logger.info(f"Written log to: {ns.log.absolute()}")
-
-  else:
+  if not hasattr(ns, INVOKE_HANDLER_VAR):
     parser.print_help()
+    sys.exit(0)
+
+  invoke_handler: Callable[..., ExecutionResult] = getattr(ns, INVOKE_HANDLER_VAR)
+  delattr(ns, INVOKE_HANDLER_VAR)
+  log_to_file = ns.log is not None
+  if log_to_file:
+    log_to_file = try_init_file_logger(ns.log, local_debugging or ns.debug)
+    if not log_to_file:
+      logger.warning("Logging to file is not possible.")
+
+  flogger = get_file_logger()
+  if not local_debugging:
+    sys_version = sys.version.replace('\n', '')
+    flogger.debug(f"CLI version: {__version__}")
+    flogger.debug(f"Python version: {sys_version}")
+    flogger.debug("Modules: %s", ', '.join(sorted(p.name for p in iter_modules())))
+
+    my_system = platform.uname()
+    flogger.debug(f"System: {my_system.system}")
+    flogger.debug(f"Node Name: {my_system.node}")
+    flogger.debug(f"Release: {my_system.release}")
+    flogger.debug(f"Version: {my_system.version}")
+    flogger.debug(f"Machine: {my_system.machine}")
+    flogger.debug(f"Processor: {my_system.processor}")
+
+  flogger.debug(f"Received arguments: {str(args)}")
+  flogger.debug(f"Parsed arguments: {str(ns)}")
+
+  start = perf_counter()
+  success, changed_anything = invoke_handler(ns)
+
+  exit_code = 0
+  if success:
+    logger.info(f"{CONSOLE_PNT_GREEN}Everything was successful!{CONSOLE_PNT_RST}")
+    flogger.info("Everything was successful!")
+  else:
+    exit_code = 1
+    if log_to_file:
+      logger.error(
+        "Not everything was successful! See log for details.")
+    else:
+      logger.error(
+        "Not everything was successful!")
+    flogger.error("Not everything was successful!")
+
+  if changed_anything is not None and not changed_anything:
+    logger.info("Didn't change anything.")
+    flogger.info("Didn't change anything.")
+
+  duration = perf_counter() - start
+  flogger.debug(f"Total duration (s): {duration}")
+
+  if log_to_file:
+    logger.info(f"Written log to: {ns.log.absolute()}")
+  sys.exit(exit_code)
 
 
 def run():

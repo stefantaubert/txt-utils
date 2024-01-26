@@ -1,16 +1,12 @@
 [project]
 name = "txt-utils"
-version = "0.0.2"
+version = "0.0.3"
 description = "CLI to modify text files."
 readme = "README.md"
-requires-python = ">=3.8, <4"
-license = {text = "MIT"}
-authors = [
-  {name = "Stefan Taubert", email = "pypi@stefantaubert.com"}
-]
-maintainers = [
-  {name = "Stefan Taubert", email = "pypi@stefantaubert.com"},
-]
+requires-python = ">=3.8, <3.13"
+license = { text = "MIT" }
+authors = [{ name = "Stefan Taubert", email = "pypi@stefantaubert.com" }]
+maintainers = [{ name = "Stefan Taubert", email = "pypi@stefantaubert.com" }]
 keywords = [
   "Preprocessing",
   "Processing",
@@ -18,7 +14,7 @@ keywords = [
   "Speech synthesis",
   "Utils",
   "Language",
-  "Linguistics"
+  "Linguistics",
 ]
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
@@ -35,13 +31,14 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
   "pandas",
   "tqdm",
   "ordered_set>=4.1.0",
-  "pronunciation_dictionary>=0.0.5",
+  "pronunciation_dictionary>=0.0.6",
 ]
 
 [project.urls]
@@ -53,21 +50,21 @@ txt-utils-cli = "txt_utils_cli.cli:run_prod"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = [
-  "txt_utils_cli"
-]
+include = ["txt_utils", "txt_utils.*", "txt_utils_cli", "txt_utils_cli.*"]
 exclude = [
+  "txt_utils_tests",
+  "txt_utils_tests.*",
+  "txt_utils_cli_tests",
+  "txt_utils_cli_tests.*",
   "txt_utils_debug",
+  "txt_utils_debug.*",
 ]
 namespaces = true
 
 [tool.pytest.ini_options]
 log_cli = true
 log_level = "DEBUG"
-testpaths = [
-  "src/txt_utils_tests",
-  "src/txt_utils_cli_tests"
-]
+testpaths = ["src/txt_utils_tests", "src/txt_utils_cli_tests"]
 
 [tool.autopep8]
 indent-size = 2
@@ -77,15 +74,12 @@ max_line_length = 100
 [tool.isort]
 line_length = 100
 indent = 2
-known_first_party = [
-  "txt_utils",
-  "txt_utils_cli"
-]
+known_first_party = ["txt_utils", "txt_utils_cli"]
 known_third_party = [
   "pandas",
   "tqdm",
   "ordered_set",
-  "pronunciation_dictionary"
+  "pronunciation_dictionary",
 ]
 
 [tool.pyright]
@@ -100,14 +94,14 @@ exclude = [
   "**/__pycache__",
   ".git",
   "**/*.egg-info",
-  "**/*_debug"
+  "**/*_debug",
 ]
 useLibraryCodeForTypes = true
 
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py{38,39,310,311}
+envlist = py{38,39,310,311,312}
 isolated_build = True
 
 [testenv]
@@ -121,8 +115,5 @@ commands =
 """
 
 [build-system]
-requires = [
-  "setuptools >= 40.9.0",
-  "wheel",
-]
+requires = ["setuptools >= 40.9.0", "wheel"]
 build-backend = "setuptools.build_meta"

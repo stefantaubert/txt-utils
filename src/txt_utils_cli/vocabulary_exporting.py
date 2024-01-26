@@ -33,7 +33,8 @@ def extract_vocabulary_ns(ns: Namespace) -> ExecutionResult:
     return False, False
 
   voc = extract_vocabulary_from_text(
-    content, ns.lsep, ns.sep, ns.include_empty, ns.n_jobs, ns.maxtasksperchild, ns.chunksize, silent=False)
+    content, line_sep=ns.lsep, word_sep=ns.sep, include_empty=ns.include_empty, n_jobs=ns.n_jobs, maxtasksperchild=ns.maxtasksperchild, chunksize=ns.chunksize, silent=False
+  )
 
   logger.info("Saving...")
   output = cast(Path, ns.output)

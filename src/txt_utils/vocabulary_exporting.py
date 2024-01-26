@@ -9,10 +9,10 @@ from tqdm import tqdm
 from txt_utils.helper import split_adv
 
 
-def extract_vocabulary_from_text(content: str, lsep: str, sep: str, include_empty: bool, n_jobs: int, maxtasksperchild: Optional[int], chunksize: int, silent: bool = False) -> OrderedSet[str]:
+def extract_vocabulary_from_text(content: str, *, line_sep: str = "\n", word_sep: str = " ", include_empty: bool = False, n_jobs: int = 4, maxtasksperchild: Optional[int] = None, chunksize: int = 10_000, silent: bool = False) -> OrderedSet[str]:
   logger = getLogger(__name__)
   logger.info("Splitting lines...")
-  lines = content.split(lsep)
+  lines = content.split(line_sep)
   del content
 
   n_jobs = cast(int, n_jobs)
@@ -35,7 +35,7 @@ def extract_vocabulary_from_text(content: str, lsep: str, sep: str, include_empt
 
   method_proxy = partial(
     get_vocab_process,
-    wsep=sep,
+    wsep=word_sep,
   )
 
   voc = set()
@@ -46,7 +46,8 @@ def extract_vocabulary_from_text(content: str, lsep: str, sep: str, include_empt
     maxtasksperchild=maxtasksperchild,
   ) as pool:
     iterator = pool.imap_unordered(method_proxy, range(len(chunks)), chunksize=1)
-    iterator = tqdm(iterator, total=len(chunks), desc="Processing", unit=" chunk(s)", disable=silent)
+    iterator = tqdm(iterator, total=len(chunks), desc="Processing",
+                    unit=" chunk(s)", disable=silent)
     voc.update(*iterator)
   del chunks
 
