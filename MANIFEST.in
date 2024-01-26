@@ -18,8 +18,11 @@ include \
   setup.cfg
 
 global-exclude \
-  *.py[co] \
+  *~ \
+  *.py[cod] \
+  *.so \
   .DS_Store
 
-prune .*/
-prune **/__pycache__
+prune \
+  .*/
+  **/__pycache__

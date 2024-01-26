@@ -48,6 +48,13 @@ Issues = "https://github.com/stefantaubert/txt-utils/issues"
 [project.scripts]
 txt-utils-cli = "txt_utils_cli.cli:run_prod"
 
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+packages = ["txt_utils", "txt_utils_cli"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["txt_utils", "txt_utils.*", "txt_utils_cli", "txt_utils_cli.*"]
