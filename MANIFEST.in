@@ -1,10 +1,8 @@
-graft \
-  src/txt_utils_tests/
-  src/txt_utils_cli_tests/
+graft src/txt_utils_tests/
+graft src/txt_utils_cli_tests/
 
 include \
   pylintrc \
-  AUTHORS.txt \
   CHANGELOG.md \
   CODE_OF_CONDUCT.md \
   CONTRIBUTING.md \
@@ -23,6 +21,5 @@ global-exclude \
   *.so \
   .DS_Store
 
-prune \
-  .*/
-  **/__pycache__
+prune .*/
+prune **/__pycache__/
